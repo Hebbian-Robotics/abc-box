@@ -25,8 +25,12 @@ export function getLayout() {
     rearRailLength: 1.37 - 0.06,
     workPanelWidth: 1.27,
     workPanelDepth: 0.5825,
-    frontClampDepth: 0.12,
-    rearClampDepth: 0.75,
+    tableFrontDepth: 0.075,
+    tableDepth: 1.25,
+    armClampHorizontal: 0.56,
+    frameClampHorizontal: 0.668,
+    frameClampDepth: 0.26,
+    frameClampInwardComponent: 0.24,
   };
 }
 

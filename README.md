@@ -19,6 +19,8 @@ This is an independent construction proposal based on public [ABC](https://abc.b
 
 The design uses 14 supplier-cut extrusions, a shared arm beam, one camera mast, outside-mounted wall panels and removable table clamps. It needs an existing support table. The camera support lengths are proposed construction dimensions; the walls are 80 mm farther apart and the back wall is 40 mm farther back than the simulation's clear wall dimensions.
 
+The example table's front edge sits 75 mm inside the enclosure. Four clamps enter through the open front: two hold the arm beam and two angle inward to hold the side rails. All three wall panels are rectangular, with no clamp cutouts. The front posts overhang the table by 75 mm and the camera foot by 167.5 mm. The clamp bodies are approximate, with only about 2.5 mm nominal pad-to-wall clearance; actual fit, cantilever support and holding capacity remain unverified. This layout preserves all extrusion lengths and arm/camera positions.
+
 ## Robot model
 
 The viewer loads the official [I2RT YAM v1 URDF](https://github.com/i2rt-robotics/i2rt/blob/120c3c81400171174604e503943f8d1ebc891058/i2rt/robot_models/arm/yam/v1/yam.urdf) and nine unmodified STL meshes, pinned to revision `120c3c81400171174604e503943f8d1ebc891058`. The MIT-licensed assets, upstream license and SHA-256 provenance manifest are in [`public/models/i2rt-yam/`](public/models/i2rt-yam/).
@@ -31,7 +33,7 @@ The approximately 7.5 MB of mesh assets are served alongside the site, with no R
 
 ## Build and buy
 
-Start with the [build list](public/compact-build-list.md), which includes panel blanks, clamp cutouts, fasteners, assembly notes and unresolved fit details.
+Start with the [build list](public/compact-build-list.md), which includes rectangular panel blanks, clamp placement, fasteners, assembly notes and unresolved fit details.
 
 | Download | Contents |
 |---|---|

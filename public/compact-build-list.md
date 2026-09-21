@@ -55,13 +55,27 @@ Screws and washers are not included in the CSVs. Source them separately or reuse
 
 ## Other parts
 
-- **Six removable table clamps:** two for the arm beam and four for the lower frame rails. The illustrated example is [Performance Tool W3982](https://www.amazon.com/dp/B01N0OM99E), with 203.2 mm throat depth and 76.2 mm opening. The model's example table is 1600 × 1250 × 35 mm. The modeled reaches are 190 mm for arm clamps and 130 mm for frame clamps, with a 65 mm clamped stack. Recalculate for another table and any protective pads. Clamp bodies are simplified and holding capacity under robot motion has not been validated.
+- **Four removable table clamps:** two for the arm beam and two for the lower side rails, all entering from the open front. The illustrated candidate is [Performance Tool W3982 on Amazon](https://www.amazon.com/dp/B01N0OM99E). The [manufacturer specifies](https://wilmarllc.com/w3982/w3982-8-deep-throat-c-clamp) an 8-inch throat (203.2 mm) and 3-inch opening (76.2 mm). Those two dimensions are sourced; the modeled body, pads, screw and handle are approximate, not manufacturer CAD. A dimensioned body/pad drawing has not been verified. The example table is 1600 × 1250 × 35 mm, with its front edge 75 mm inside the enclosure. Required reaches are 177.5 mm for the arm clamps and about 190.6 mm along the angled frame clamps, with a 65 mm clamped stack. Actual fit and holding capacity under robot motion remain unverified.
 - **Two arm mounting plates and one camera adapter:** measure hole patterns and mounting surfaces on the actual equipment. The displayed arm mounting areas are outlines, and the camera adapter is a placeholder; there is no verified adapter SKU or machining drawing.
 - **Worktop retention tape:** choose for the table and worktop material. Tape limits sliding; the table carries the worktop weight. Account for under-panel tape in the 30 mm finished work height. Walls remain bolted and the frame/arm beam remain clamped.
 - **Optional end caps:** [CSV](misumi-compact-optional-caps.csv), HFC6-3030-B ×7 and HFC6-3090-B ×2. The seven 3030 caps cover four post tops, the mast top, the exposed foot end and the offset end; the two 3090 caps cover the arm-beam ends. Do not cap butt joints or table-bearing ends. Caps are not shown in the viewer.
 - **Support table, arms and camera:** source separately. The example table dimensions illustrate clamp access, not a required table model.
 
-## Panel blanks and cutouts
+## Front-entry clamp placement
+
+Depths are measured back from the enclosure's open-front plane; horizontal positions are measured from its centreline. Moving the whole workcell toward the table edge preserves all bar lengths, arm spacing and camera targets.
+
+| Item | Horizontal position | Depth | Orientation |
+|---|---|---|---|
+| Table front edge | Across the table | 75 | Parallel to arm beam |
+| Arm-beam clamp contact centres | ±560 | 252.5 | Bodies extend straight toward the open front |
+| Side-rail clamp contact centres | ±668 | 260 | Bodies extend toward the front, angled 13.9° inward |
+
+The inward angle lets the frame-clamp bodies pass inside the lower rails. Their approximate pads clear the wall faces by only about 2.5 mm, so the displayed clearance is not confirmation that the actual W3982 fits. Measure the real pads, body, table edge and apron before relying on this arrangement. Account for protective pads in the clamp opening.
+
+The front posts project 75 mm past the table edge; the camera foot projects 167.5 mm, with the mast centre 75 mm past the edge. Those portions are cantilevered, not directly table-supported. This layout has two frame clamps near the front and no rear hold-downs. Check cantilever connections, racking and uplift resistance before robot operation. The viewer does not establish a load rating.
+
+## Rectangular panel blanks
 
 | Panel | Nominal blank | Quantity |
 |---|---|---:|
@@ -73,13 +87,7 @@ Panels are separate purchases and are not included in the MISUMI CSVs. Material 
 
 Walls bolt onto the outside frame faces. Side panels end at depth 935 mm; the back panel covers both side-panel rear edges. Wall bottoms are at table level and tops are 1250 mm above the work surface. No mitered panel joints are specified.
 
-Each side wall needs three bottom-opening cutouts. Distances are measured from that panel's front edge:
-
-| Cutout | Start along depth | Width | Height from bottom |
-|---|---:|---:|---:|
-| Front frame clamp | 90 | 60 | 105 |
-| Arm-beam clamp | 197.5 | 110 | 105 |
-| Rear frame clamp | 720 | 60 | 105 |
+All three walls are rectangular. The proposed front-entry clamps avoid panel cutouts. The first 75 mm of each side panel projects past the table edge with the front frame; the wall bottoms remain level with the tabletop.
 
 Proposed side-panel fixing centres are at depths 50 and 850 mm and heights 15 and 1265 mm. Proposed back-panel fixing centres are 95 and 1295 mm from its left edge and at heights 15 and 1265 mm. All screw heads are outside. Hole diameters, material-specific edge distances and machining tolerances remain to be specified.
 
@@ -92,7 +100,7 @@ The worktop begins 302.5 mm from the open-front datum and ends at 885 mm. It has
 1. Identify the bars and load the required pre-assembly T-nuts into their slots.
 2. Join the side and rear rails between the four posts using the 12 enclosure brackets. Check squareness and the outside dimensions.
 3. Position the shared arm beam and proposed camera support. Use the six camera-support brackets for the foot-to-beam, mast-to-foot and offset-to-mast joints.
-4. Fit removable clamps to the support table. Check clamp access and the side-panel cutout positions against the actual hardware.
+4. Position the table front edge 75 mm inside the enclosure and fit the four front-entry clamps. Verify actual clamp clearance and the support of the overhanging front posts and camera foot before loading the structure.
 5. Measure for panels and equipment adapters. Complete material-specific hole and fastener details, then fit the outside wall panels.
 6. Fit the 30 mm finished worktop and retention tape. Position the actual arm bases and camera using the reference datums, accounting for adapter thickness and the camera optical centre.
 

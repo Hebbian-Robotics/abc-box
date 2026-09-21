@@ -150,12 +150,21 @@ export function createWorkcell(
     dimensions: "1600 × 1250 mm shown · placeholder",
     confidence: "Illustrative",
     description:
-      "Existing table supports the complete workcell. Its drawn size and 750 mm leg height are illustrative, not a purchase item.",
-    positionNote: "Top of existing table is the height datum (0 mm).",
+      "Example table positioned with its front edge 75 mm inside the enclosure, allowing four clamps to enter through the open front. The front posts and camera mast overhang the table; this support arrangement requires physical stability verification.",
+    positionNote:
+      "Tabletop is the height datum. Front edge at depth 75 mm; front posts extend 75 mm beyond it, and the camera foot extends 167.5 mm beyond it. Check actual clamp dimensions and apron clearance before assembly.",
   });
-  addBox(table, [1.6, 0.035, 1.25], [0, -0.0175, 0.5], palette.table);
+  addBox(
+    table,
+    [1.6, 0.035, layout.tableDepth],
+    [0, -0.0175, layout.tableFrontDepth + layout.tableDepth / 2],
+    palette.table,
+  );
   for (const horizontal of [-0.72, 0.72]) {
-    for (const depth of [-0.05, 1.03]) {
+    for (const depth of [
+      layout.tableFrontDepth + 0.075,
+      layout.tableFrontDepth + layout.tableDepth - 0.095,
+    ]) {
       addBox(
         table,
         [0.045, 0.715, 0.045],
@@ -187,7 +196,7 @@ export function createWorkcell(
       dimensions: "GFS6-3030 profile · 300 mm supplied length",
       confidence: "Proposed part",
       description:
-        "Short fore–aft member creates the L-shaped mast support. One end meets the arm beam; the mast sits at the other end. Exact joining hardware is schematic.",
+        "Short fore–aft member creates the L-shaped mast support and joins the arm beam. With front-entry clamps, 167.5 mm of this foot and the mast extend beyond the table edge. This cantilever and its bracket connections require stability verification.",
       positionNote:
         "Mast center is 252.5 mm toward the open side from the arm-base line.",
     },
@@ -540,24 +549,34 @@ export function createWorkcell(
   );
   for (const side of [-1, 1]) {
     const sideName = side === -1 ? "Left" : "Right";
-    for (const [mountName, horizontal, depth] of [
-      ["arm beam", side * 0.61, targets.armDepth],
-      ["front frame", side * layout.sideRailHorizontal, layout.frontClampDepth],
-      ["rear frame", side * layout.sideRailHorizontal, layout.rearClampDepth],
+    for (const [mountName, horizontal, depth, rotation] of [
+      [
+        "arm beam",
+        side * layout.armClampHorizontal,
+        targets.armDepth,
+        Math.PI / 2,
+      ],
+      [
+        "frame",
+        side * layout.frameClampHorizontal,
+        layout.frameClampDepth,
+        Math.acos(-side * layout.frameClampInwardComponent),
+      ],
     ] as const) {
       const tableClamp = createPart({
         id: `${sideName.toLowerCase()}-${mountName.replaceAll(" ", "-")}-clamp`,
         name: `${sideName} ${mountName} table clamp`,
         category: "connectors",
-        dimensions: "8-inch throat (203.2 mm) · 3-inch max opening (76.2 mm)",
+        dimensions:
+          "203.2 mm throat · 76.2 mm max opening · body/pads approximate",
         confidence: "Proposed part",
         purchaseUrl: "https://www.amazon.com/dp/B01N0OM99E",
         description:
-          "One Performance Tool W3982 deep-reach C-clamp, shown with a simplified body and screw. Six clamps in total: two for the arm beam and four for the frame. Removable, with no table drilling. Dimensional fit is shown; robot-load holding capacity has not been validated.",
-        positionNote: `With the illustrated 1600 mm-wide, 35 mm-thick table: reach to this pad is ${Math.round((0.8 - Math.abs(horizontal)) * 1000)} mm, and clamped thickness is 65 mm. Both frame and arm-beam clamps pass through bottom notches in the outside-mounted side walls.`,
+          "Performance Tool W3982: manufacturer-specified 8-inch throat and 3-inch opening. Body, pads, screw and handle are approximate, not manufacturer CAD. Four clamps enter from the open front: two for the arm beam and two angled inward for the side rails, avoiding panel cutouts in this proposed layout. Actual fit and holding capacity require verification; there are no rear hold-downs.",
+        positionNote: `Table front edge at depth 75 mm. Required throat along this clamp is ${((1000 * (depth - layout.tableFrontDepth)) / Math.sin(rotation)).toFixed(1)} mm; clamped stack is 65 mm. Frame clamps angle inward to clear the lower rails, with about 2.5 mm nominal pad-to-wall clearance. Front posts and camera foot overhang the table.`,
       });
       tableClamp.object.position.set(horizontal, 0, depth);
-      if (side === -1) tableClamp.object.rotation.y = Math.PI;
+      tableClamp.object.rotation.y = rotation;
       addBox(tableClamp, [0.2032, 0.02, 0.02], [0.1016, 0.065, 0], 0x426274);
       addBox(tableClamp, [0.02, 0.155, 0.025], [0.2132, -0.0025, 0], 0x426274);
       addBox(tableClamp, [0.2232, 0.02, 0.02], [0.1016, -0.08, 0], 0x426274);
@@ -600,61 +619,27 @@ export function createWorkcell(
     [0, 0.015, 0.3025 + layout.workPanelDepth / 2],
     0xf3f4ee,
   );
-  const wallTop = 1.28;
-  const notchTop = 0.105;
-  const wallStartDepth = 0;
-  const wallEndDepth = layout.frameDepth;
-  const clampNotches = [
-    { centerDepth: layout.frontClampDepth, halfWidth: 0.03 },
-    { centerDepth: targets.armDepth, halfWidth: 0.055 },
-    { centerDepth: layout.rearClampDepth, halfWidth: 0.03 },
-  ];
+  const wallTop = layout.frameHeight;
   for (const side of [-1, 1]) {
     const sideName = side === -1 ? "left" : "right";
     const wall = createPart({
       id: `${sideName}-wall`,
       name: `${sideName === "left" ? "Left" : "Right"} enclosure wall`,
       category: "panels",
-      dimensions: `${Math.round((wallEndDepth - wallStartDepth) * 1000)} × ${Math.round((wallTop - layout.wallBottom) * 1000)} × 10 mm · ${clampNotches.length} clamp notches`,
+      dimensions: "935 × 1280 × 10 mm · rectangular panel",
       confidence: "Proposed part",
       description:
-        "Bolts to the outside face of the frame. Panel centers at ±690 mm give 1370 mm between wall faces, 80 mm wider than ABC. Frame rails project 30 mm into this space. Three bottom notches clear the two frame clamps and the arm-beam clamp.",
+        "Rectangular panel bolted to the outside frame face. Panel centers at ±690 mm give 1370 mm between wall faces, 80 mm wider than ABC. Frame rails project 30 mm inward. Clamps enter through the open front, so no clamp cutouts are needed.",
       positionNote:
-        "935 × 1280 × 10 mm blank. Bottom notches: 60 × 105 mm centered at depths 120 and 750 mm; 110 × 105 mm centered at 252.5 mm. Four outside-facing M6 fixings at depths 50/850 mm and heights 15/1265 mm. Confirm cutouts and drilling against actual clamps and assembled frame.",
+        "935 × 1280 × 10 mm nominal blank. Four outside-facing M6 fixings at depths 50/850 mm and heights 15/1265 mm. Confirm final dimensions, screw lengths and drilling against the assembled frame and selected material.",
     });
-    const panelHorizontal = side * layout.sideWallHorizontal;
     addBox(
       wall,
-      [0.01, wallTop - 0.105, wallEndDepth - wallStartDepth],
+      [layout.wallThickness, wallTop - layout.wallBottom, layout.frameDepth],
       [
-        panelHorizontal,
-        (wallTop + 0.105) / 2,
-        (wallStartDepth + wallEndDepth) / 2,
-      ],
-      palette.panels,
-    );
-    let segmentStart = wallStartDepth;
-    for (const clampNotch of clampNotches) {
-      const segmentEnd = clampNotch.centerDepth - clampNotch.halfWidth;
-      addBox(
-        wall,
-        [0.01, notchTop - layout.wallBottom, segmentEnd - segmentStart],
-        [
-          panelHorizontal,
-          (notchTop + layout.wallBottom) / 2,
-          (segmentStart + segmentEnd) / 2,
-        ],
-        palette.panels,
-      );
-      segmentStart = clampNotch.centerDepth + clampNotch.halfWidth;
-    }
-    addBox(
-      wall,
-      [0.01, notchTop - layout.wallBottom, wallEndDepth - segmentStart],
-      [
-        panelHorizontal,
-        (notchTop + layout.wallBottom) / 2,
-        (segmentStart + wallEndDepth) / 2,
+        side * layout.sideWallHorizontal,
+        (wallTop + layout.wallBottom) / 2,
+        layout.frameDepth / 2,
       ],
       palette.panels,
     );

@@ -19,9 +19,9 @@ interface ShoppingItem {
 const additionalHardware: ShoppingItem[] = [
   {
     name: "Performance Tool W3982 deep-reach C-clamp",
-    quantity: "6 singles · 2 arm beam + 4 frame",
+    quantity: "4 singles · 2 arm beam + 2 frame · fit pending",
     detail:
-      "8-inch throat (203.2 mm), 3-inch opening (76.2 mm). All six are modeled on the illustrative 1600 × 1250 × 35 mm table: 190 mm reach at the arm beam; 130 mm reach at the compact frame; 65 mm clamped thickness. No drilling. Clamp body shape is approximate; holding capacity under robot motion is not validated. Allow clearance for protective pads.",
+      "Manufacturer specifies an 8-inch throat (203.2 mm) and 3-inch opening (76.2 mm); body, pads, screw and handle are approximate. Four clamps enter through the open front of the illustrative 1600 × 1250 × 35 mm table, whose front edge is 75 mm inside the enclosure. Required reach: 177.5 mm at the arm beam; 190.6 mm along the angled frame clamps; 65 mm clamped stack. Approximate frame pads leave only 2.5 mm wall clearance. Verify actual fit and support of the overhanging front posts/camera foot. Holding capacity under robot motion is unverified.",
     url: "https://www.amazon.com/dp/B01N0OM99E",
     status: "Amazon",
   },
@@ -132,8 +132,8 @@ export function renderShoppingList(
       .join("")}</div>
     <details class="build-details"><summary>Dimensions, panels and connectors</summary>
       <p>Frame: 1370 × 935 × 1280 mm. Between wall faces: 1370 × 935 mm; rails project 30 mm inward. Panels outside: 1390 × 945 × 1280 mm. Four 1280 mm posts, four 875 mm side rails and two 1310 mm rear rails use butt joints. Camera support lengths are proposed construction dimensions, not a verified ABC physical cut list.</p>
-      <p>Walls bolt to the outside frame faces. Wall blanks: two 935 × 1280 × 10 mm sides and one 1390 × 1280 × 10 mm back; the back overlaps the side-panel edges. Each side has three bottom notches: 60 × 105 mm centered at depths 120/750 mm for frame clamps, and 110 × 105 mm at 252.5 mm for the arm-beam clamp. Walls extend to the table; 1250 mm is above the raised work plane. Worktop: 1270 × 582.5 × 30 mm, resting directly on the table and retained with tape. These are nominal dimensions; fit clearances and holes follow actual material and dry assembly.</p>
-      <p>All 18 brackets, 12 wall fixings, 6 clamps and adapter placeholders are shown. Screw heads and nuts belong to their connector’s hover group. Optional finishing caps are not shown.</p>
+      <p>Walls bolt to the outside frame faces. Rectangular blanks: two 935 × 1280 × 10 mm sides and one 1390 × 1280 × 10 mm back; the back overlaps the side-panel edges. Four front-entry clamps avoid wall cutouts. The table front edge sits 75 mm inside the enclosure, leaving the front posts and 167.5 mm of the camera foot overhanging. Actual clamp fit and cantilever stability remain unverified. Wall bottoms are at tabletop height; 1250 mm is above the raised work plane. Worktop: 1270 × 582.5 × 30 mm, resting directly on the table and retained with tape. These are nominal dimensions; fit clearances and holes follow actual material and dry assembly.</p>
+      <p>All 18 brackets, 12 wall fixings, 4 clamps and adapter placeholders are shown. Screw heads and nuts belong to their connector’s hover group. Optional finishing caps are not shown.</p>
     </details>
     <p class="muted"><a href="https://github.com/Hebbian-Robotics/abc-box" target="_blank" rel="noreferrer">Source code</a> · <a href="${import.meta.env.BASE_URL}LICENSE.txt" target="_blank">Project license</a> · <a href="${import.meta.env.BASE_URL}NOTICE.txt" target="_blank">Attribution</a> · <a href="${import.meta.env.BASE_URL}THIRD_PARTY_LICENSES.txt" target="_blank">Third-party licenses</a></p>
     <p class="muted">Sources: product pages linked above; ABC geometry in the model inspector. Check current supplier specifications, pricing and availability before ordering.</p>`;
