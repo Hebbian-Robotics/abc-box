@@ -22,7 +22,7 @@ Revision: 120c3c81400171174604e503943f8d1ebc891058
 Directory: i2rt/robot_models/arm/yam/v1
 Copyright (c) I2RT Robotics. Distributed under MIT.
 URDF and STL assets are unmodified. The viewer applies a coordinate rotation,
-an illustrative joint pose and standard rendering materials at runtime.
+an illustrative joint pose and satin-black rendering materials at runtime.
 The upstream license and asset hashes accompany the files in public/models/i2rt-yam.
 
 URDF loading: urdf-loader 0.13.1 by Garrett Johnson and contributors

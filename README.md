@@ -27,6 +27,8 @@ The viewer loads the official [I2RT YAM v1 URDF](https://github.com/i2rt-robotic
 
 The model is loaded once, then cloned for the two arms. Joint axes, origins, limits and scale come from the URDF. A right-handed coordinate rotation maps URDF X to workspace depth, Y to width and Z to height. The displayed pose uses shoulder and elbow angles of 60 degrees and 20 mm inward travel on each gripper finger. It is an illustrative pose, not a collision check.
 
+Runtime materials replace the URDF's CAD link colors with a satin-black finish based on [OpenYAM product photos](https://shop.anvil.bot/products/openyam-quest-teleop-kit). The finish is a visual approximation; the combined STL meshes do not separate individual silver fasteners or markings. Upstream URDF and mesh files remain unmodified.
+
 Both bases sit on the +30 mm arm-beam datum at 620 mm spacing. The outlined mounting areas do not assert a plate thickness or hole pattern. Account for any real adapter thickness when setting the camera/arm datums. Confirm the model variant matches the installed hardware; YAM Pro, Ultra and other revisions are not represented by this YAM v1 asset.
 
 The approximately 7.5 MB of mesh assets are served alongside the site, with no ROS installation or external model server. The frame remains usable while they load; a failed model request produces a visible error instead of a substitute robot sketch.

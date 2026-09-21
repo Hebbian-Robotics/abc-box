@@ -52,19 +52,12 @@ export async function loadYamArms(parts: ModelPart[]): Promise<void> {
     });
     robot.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
-      // Independent standard materials preserve each URDF colour and allow
-      // arm-level highlighting without highlighting the other clone.
-      const sourceMaterial = Array.isArray(object.material)
-        ? object.material[0]
-        : object.material;
-      const sourceColor =
-        sourceMaterial && "color" in sourceMaterial
-          ? sourceMaterial.color
-          : undefined;
+      // Match the physical YAM's satin-black finish, overriding CAD link colors.
+      // Independent materials keep highlighting isolated to each arm.
       const material = new THREE.MeshStandardMaterial({
-        color: sourceColor instanceof THREE.Color ? sourceColor : 0xb8c2c7,
-        roughness: 0.62,
-        metalness: 0.2,
+        color: 0x25282b,
+        roughness: 0.48,
+        metalness: 0.35,
       });
       object.material = material;
       object.castShadow = true;
