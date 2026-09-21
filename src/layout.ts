@@ -1,0 +1,33 @@
+export function getLayout() {
+  return {
+    label: "Compact ABC workspace · MISUMI cut to length",
+    wallBottom: 0,
+    interiorWidth: 1.37,
+    interiorDepth: 0.935,
+    wallThickness: 0.01,
+    sideWallHorizontal: 0.69,
+    rearWallDepth: 0.94,
+    rearPanelWidth: 1.39,
+    panelOutsideDepth: 0.945,
+    frameWidth: 1.37,
+    frameDepth: 0.935,
+    frameHeight: 1.28,
+    frontPostDepth: 0.015,
+    rearPostDepth: 0.92,
+    postHorizontal: 0.67,
+    sideRailStart: 0.03,
+    sideRailHorizontal: 0.67,
+    sideRailLength: 0.935 - 0.06,
+    upperSideRailHeight: 1.28 - 0.015,
+    lowerRearRailHeight: 0.015,
+    upperRearRailHeight: 1.28 - 0.015,
+    rearRailDepth: 0.92,
+    rearRailLength: 1.37 - 0.06,
+    workPanelWidth: 1.27,
+    workPanelDepth: 0.5825,
+    frontClampDepth: 0.12,
+    rearClampDepth: 0.75,
+  };
+}
+
+export type WorkcellLayout = ReturnType<typeof getLayout>;

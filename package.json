@@ -1,0 +1,29 @@
+{
+  "name": "abc-box",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "check": "biome check .",
+    "format": "biome check --write .",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@types/three": "0.186.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.0"
+  },
+  "description": "Interactive ABC-inspired robot workcell viewer and bill of materials",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=24"
+  }
+}

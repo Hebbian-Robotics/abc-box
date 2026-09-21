@@ -1,0 +1,17 @@
+ABC Box
+Copyright 2026 ABC Box contributors
+
+An independent interactive workcell design and bill of materials inspired by:
+
+ABC: https://abc.bot/
+Public simulation: https://github.com/amazon-far/abc
+Reference revision: 6c467ce
+Reference scene: abc_sim/models/yam_bimanual_empty.xml
+Paper: https://abc.bot/abc.pdf (Figure 22)
+
+ABC's public repository is licensed under Apache License 2.0. This viewer uses
+reference dimensions and poses, with a proposed extrusion frame, exterior wall
+mounting, tabletop clamps and a single camera support. It is not an official
+ABC fabrication drawing or a manufacturer-approved robot mounting assembly.
+
+Three.js and other dependencies are distributed under their own licenses.
