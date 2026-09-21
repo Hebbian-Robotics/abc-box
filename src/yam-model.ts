@@ -70,9 +70,10 @@ export async function loadYamArms(parts: ModelPart[]): Promise<void> {
     });
     const whiteCoverObjects = new Set<THREE.Object3D>();
     for (const linkName of ["link2", "link3"]) {
-      robot.links[linkName]?.traverse((object) =>
-        whiteCoverObjects.add(object),
-      );
+      for (const child of robot.links[linkName]?.children ?? []) {
+        if (child.type !== "URDFVisual") continue;
+        child.traverse((object) => whiteCoverObjects.add(object));
+      }
     }
     robot.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
