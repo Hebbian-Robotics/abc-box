@@ -3,7 +3,7 @@
   "revision": "120c3c81400171174604e503943f8d1ebc891058",
   "upstreamDirectory": "i2rt/robot_models/arm/yam/v1/",
   "license": "MIT",
-  "modifications": "None to upstream assets. Coordinate conversion, display pose and satin-black materials based on physical OpenYAM product photos are applied at runtime.",
+  "modifications": "None to upstream assets. Coordinate conversion, display pose and approximate white-cover/black-hardware colors based on I2RT YAM product photos are applied at runtime. White regions use mesh-local vertex colors on the two long links.",
   "assets": [
     {
       "path": "yam.urdf",

@@ -2,6 +2,24 @@ import * as THREE from "three";
 import URDFLoader, { type URDFRobot } from "urdf-loader";
 import type { ModelPart } from "./model";
 
+function applyWhiteCoverColors(geometry: THREE.BufferGeometry): void {
+  const positions = geometry.getAttribute("position");
+  const colors = new Float32Array(positions.count * 3);
+  const blackFinish = new THREE.Color(0x25282b);
+  const whiteFinish = new THREE.Color(0xefefeb);
+  // The pinned STL meshes combine covers and joints. Approximate the cover
+  // region in mesh-local metres, retaining black ends around both joint axes.
+  for (let vertexIndex = 0; vertexIndex < positions.count; vertexIndex++) {
+    const axialPosition = positions.getZ(vertexIndex);
+    const color =
+      axialPosition >= 0.065 && axialPosition <= 0.24
+        ? whiteFinish
+        : blackFinish;
+    color.toArray(colors, vertexIndex * 3);
+  }
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+}
+
 function loadYamRobot(): Promise<URDFRobot> {
   return new Promise((resolve, reject) => {
     const loadingManager = new THREE.LoadingManager();
@@ -50,12 +68,24 @@ export async function loadYamArms(parts: ModelPart[]): Promise<void> {
       joint7: -0.02,
       joint8: -0.02,
     });
+    const whiteCoverObjects = new Set<THREE.Object3D>();
+    for (const linkName of ["link2", "link3"]) {
+      robot.links[linkName]?.traverse((object) =>
+        whiteCoverObjects.add(object),
+      );
+    }
     robot.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
-      // Match the physical YAM's satin-black finish, overriding CAD link colors.
+      const hasWhiteCover = whiteCoverObjects.has(object);
+      if (hasWhiteCover) {
+        object.geometry = object.geometry.clone();
+        applyWhiteCoverColors(object.geometry);
+      }
+      // Match original I2RT YAM white covers and black hardware.
       // Independent materials keep highlighting isolated to each arm.
       const material = new THREE.MeshStandardMaterial({
-        color: 0x25282b,
+        color: hasWhiteCover ? 0xffffff : 0x25282b,
+        vertexColors: hasWhiteCover,
         roughness: 0.48,
         metalness: 0.35,
       });
