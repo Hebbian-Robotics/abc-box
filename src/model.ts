@@ -7,7 +7,11 @@ export type PartCategory =
   | "arms"
   | "table"
   | "connectors";
-export type Confidence = "Simulation target" | "Proposed part" | "Illustrative";
+export type Confidence =
+  | "Simulation target"
+  | "Manufacturer model"
+  | "Proposed part"
+  | "Illustrative";
 export interface PartDescription {
   id: string;
   name: string;
@@ -26,6 +30,7 @@ export interface ModelPart {
   description: PartDescription;
   object: THREE.Group;
   surfaces: THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>[];
+  outlines: THREE.LineLoop<THREE.BufferGeometry, THREE.LineBasicMaterial>[];
 }
 export const palette = {
   structure: 0x354b59,
@@ -51,7 +56,7 @@ export function createWorkcell(
     const object = new THREE.Group();
     object.name = description.id;
     scene.add(object);
-    const part = { description, object, surfaces: [] };
+    const part: ModelPart = { description, object, surfaces: [], outlines: [] };
     parts.push(part);
     return part;
   }
@@ -748,101 +753,57 @@ export function createWorkcell(
       id: `${sideName.toLowerCase()}-adapter`,
       name: `${sideName} arm base plate`,
       category: "connectors",
-      dimensions: "140 × 90 mm shown · placeholder",
+      dimensions: "140 × 90 mm mounting-area outline · illustrative",
       confidence: "Illustrative",
       description:
-        "Placeholder for an arm base plate, with its underside mounted at the +30 mm beam datum. Actual footprint and hole pattern have not been measured; any additional adapter would need separate detailing.",
+        "Outline of a proposed mounting area only; no adapter thickness or bolt pattern is asserted. The URDF base sits at the +30 mm beam datum. Any actual plate thickness must be accounted for when aligning the arm-base and camera datums.",
       positionNote:
         "Arm-base center at ±310 mm across the box; 252.5 mm into it.",
     });
-    addBox(
-      mountPlate,
-      [0.14, 0.008, 0.09],
-      [armHorizontal, 0.034, targets.armDepth],
-      0x263a45,
+    const mountingOutline = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(
+          armHorizontal - 0.07,
+          0.0302,
+          targets.armDepth - 0.045,
+        ),
+        new THREE.Vector3(
+          armHorizontal + 0.07,
+          0.0302,
+          targets.armDepth - 0.045,
+        ),
+        new THREE.Vector3(
+          armHorizontal + 0.07,
+          0.0302,
+          targets.armDepth + 0.045,
+        ),
+        new THREE.Vector3(
+          armHorizontal - 0.07,
+          0.0302,
+          targets.armDepth + 0.045,
+        ),
+      ]),
+      new THREE.LineBasicMaterial({ color: 0x60777f }),
     );
-    for (const horizontalOffset of [-0.045, 0.045]) {
-      for (const depthOffset of [-0.03, 0.03]) {
-        addSurface(
-          mountPlate,
-          new THREE.CylinderGeometry(0.005, 0.005, 0.004, 6),
-          new THREE.Vector3(
-            armHorizontal + horizontalOffset,
-            0.04,
-            targets.armDepth + depthOffset,
-          ),
-          0x9eaeb6,
-        );
-      }
-    }
+    mountPlate.object.add(mountingOutline);
+    mountingOutline.userData.partId = mountPlate.description.id;
+    mountPlate.outlines.push(mountingOutline);
     const arm = createPart({
       id: `${sideName.toLowerCase()}-arm`,
-      name: `${sideName} OpenYAM — envelope sketch`,
+      name: `${sideName} I2RT YAM — URDF model`,
       category: "arms",
-      dimensions: "Simplified robot geometry",
-      confidence: "Illustrative",
+      dimensions: "YAM v1 · six revolute joints + parallel gripper",
+      confidence: "Manufacturer model",
       description:
-        "A visual placeholder for an OpenYAM arm. This is not manufacturer CAD, a kinematic model, or a verified reach/collision envelope. Base locations follow ABC's 620 mm spacing.",
+        "Official I2RT YAM v1 URDF and visual meshes, displayed at their original scale. Joint origins and axes come from the manufacturer model; the displayed working pose is illustrative. This is not a collision or mounting-load simulation.",
       positionNote:
-        "Shown in a bent working pose, reaching away from the mast into the white workspace.",
+        "Base at the +30 mm arm-beam datum, ±310 mm across the box and 252.5 mm into it. Confirm the exact hardware revision and any adapter thickness before using this model for physical clearances.",
     });
-    addSurface(
-      arm,
-      new THREE.CylinderGeometry(0.045, 0.048, 0.045, 24),
-      new THREE.Vector3(armHorizontal, 0.0605, targets.armDepth),
-      0x293942,
+    arm.object.position.set(
+      armHorizontal,
+      targets.armBaseHeight,
+      targets.armDepth,
     );
-    const jointPositions = [
-      new THREE.Vector3(armHorizontal, 0.09, targets.armDepth),
-      new THREE.Vector3(armHorizontal, 0.18, targets.armDepth),
-      new THREE.Vector3(armHorizontal + side * 0.045, 0.42, 0.34),
-      new THREE.Vector3(armHorizontal - side * 0.035, 0.26, 0.55),
-      new THREE.Vector3(armHorizontal - side * 0.06, 0.2, 0.64),
-    ];
-    for (const position of jointPositions)
-      addSurface(
-        arm,
-        new THREE.SphereGeometry(0.043, 20, 14),
-        position,
-        0x293942,
-      );
-    for (
-      let jointIndex = 0;
-      jointIndex < jointPositions.length - 1;
-      jointIndex++
-    ) {
-      const startPosition = jointPositions[jointIndex];
-      const endPosition = jointPositions[jointIndex + 1];
-      if (!startPosition || !endPosition) continue;
-      const direction = new THREE.Vector3().subVectors(
-        endPosition,
-        startPosition,
-      );
-      const link = addSurface(
-        arm,
-        new THREE.CylinderGeometry(0.028, 0.032, direction.length(), 8),
-        startPosition.clone().add(endPosition).multiplyScalar(0.5),
-        jointIndex === 0 ? 0x293942 : palette.arms,
-      );
-      link.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
-        direction.normalize(),
-      );
-    }
-    const gripperCenter = jointPositions.at(-1);
-    if (gripperCenter) {
-      for (const jawOffset of [-0.023, 0.023])
-        addBox(
-          arm,
-          [0.016, 0.023, 0.075],
-          [
-            gripperCenter.x + jawOffset,
-            gripperCenter.y - 0.026,
-            gripperCenter.z + 0.043,
-          ],
-          0x344a55,
-        );
-    }
   }
   addArm(-1);
   addArm(1);

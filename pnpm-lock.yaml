@@ -112,6 +112,9 @@ importers:
       three:
         specifier: 0.186.0
         version: 0.186.0
+      urdf-loader:
+        specifier: ^0.13.1
+        version: 0.13.1(three@0.186.0)
     devDependencies:
       '@biomejs/biome':
         specifier: 2.5.14
@@ -557,6 +560,11 @@ packages:
     engines: {node: '>=16.20.0'}
     hasBin: true
 
+  urdf-loader@0.13.1:
+    resolution: {integrity: sha512-bHHoh0Yxrgrw91dPAmVnzKleA8HiVMeHy6xYqOVRw3LuZ2hDOwUiQVCbrzPZckO5S30F1Yym8zLCINN0HfcM3w==}
+    peerDependencies:
+      three: '>=0.152.0'
+
   vite@8.3.0:
     resolution: {integrity: sha512-lhZBVvEHefgE+HQZC9O7EBJgCU/nVzFNl7vkS4RE0APtWLP02/8QVIkQtzBxPquh7lq5/78NHipTj7ODQ6XuyQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -889,6 +897,10 @@ snapshots:
       '@typescript/typescript-sunos-x64': 7.0.2
       '@typescript/typescript-win32-arm64': 7.0.2
       '@typescript/typescript-win32-x64': 7.0.2
+
+  urdf-loader@0.13.1(three@0.186.0):
+    dependencies:
+      three: 0.186.0
 
   vite@8.3.0:
     dependencies:

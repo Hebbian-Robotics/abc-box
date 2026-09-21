@@ -56,7 +56,7 @@ Screws and washers are not included in the CSVs. Source them separately or reuse
 ## Other parts
 
 - **Six removable table clamps:** two for the arm beam and four for the lower frame rails. The illustrated example is [Performance Tool W3982](https://www.amazon.com/dp/B01N0OM99E), with 203.2 mm throat depth and 76.2 mm opening. The model's example table is 1600 × 1250 × 35 mm. The modeled reaches are 190 mm for arm clamps and 130 mm for frame clamps, with a 65 mm clamped stack. Recalculate for another table and any protective pads. Clamp bodies are simplified and holding capacity under robot motion has not been validated.
-- **Two arm mounting plates and one camera adapter:** measure hole patterns and mounting surfaces on the actual equipment. The displayed plates and camera adapter are placeholders; there is no verified adapter SKU or machining drawing.
+- **Two arm mounting plates and one camera adapter:** measure hole patterns and mounting surfaces on the actual equipment. The displayed arm mounting areas are outlines, and the camera adapter is a placeholder; there is no verified adapter SKU or machining drawing.
 - **Worktop retention tape:** choose for the table and worktop material. Tape limits sliding; the table carries the worktop weight. Account for under-panel tape in the 30 mm finished work height. Walls remain bolted and the frame/arm beam remain clamped.
 - **Optional end caps:** [CSV](misumi-compact-optional-caps.csv), HFC6-3030-B ×7 and HFC6-3090-B ×2. The seven 3030 caps cover four post tops, the mast top, the exposed foot end and the offset end; the two 3090 caps cover the arm-beam ends. Do not cap butt joints or table-bearing ends. Caps are not shown in the viewer.
 - **Support table, arms and camera:** source separately. The example table dimensions illustrate clamp access, not a required table model.
@@ -96,7 +96,7 @@ The worktop begins 302.5 mm from the open-front datum and ends at 885 mm. It has
 5. Measure for panels and equipment adapters. Complete material-specific hole and fastener details, then fit the outside wall panels.
 6. Fit the 30 mm finished worktop and retention tape. Position the actual arm bases and camera using the reference datums, accounting for adapter thickness and the camera optical centre.
 
-Resolve equipment adapter fit and mounting capacity before operating the arms. The schematic robot shapes cannot be used to validate reach or collision clearance.
+Resolve equipment adapter fit and mounting capacity before operating the arms. The arms display the official I2RT YAM v1 URDF and meshes in an illustrative joint pose. Confirm the actual robot variant and adapter thickness. This viewer does not perform collision detection or structural analysis.
 
 ## Sources
 

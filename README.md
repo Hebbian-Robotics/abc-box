@@ -4,7 +4,7 @@
 
 An interactive 3D viewer and bill of materials for an ABC-inspired tabletop robot workcell. Inspect individual extrusions, brackets, panels and clamps; hover or select a part to see dimensions and supplier references.
 
-This is an independent construction proposal based on public [ABC](https://abc.bot/) references. It is not an official ABC manufacturing kit. Robot sketches, camera adapters and clamp shapes are illustrative; adapter hole patterns and mounting loads still need verification for the equipment used.
+This is an independent construction proposal based on public [ABC](https://abc.bot/) references. It is not an official ABC manufacturing kit. The arms use the official I2RT YAM v1 URDF and visual meshes. Display pose, mounting-area outlines, camera adapters and clamp shapes are illustrative; adapter hole patterns and mounting loads still need verification for the equipment used.
 
 ## Design
 
@@ -18,6 +18,16 @@ This is an independent construction proposal based on public [ABC](https://abc.b
 | Camera optical target | 954.3 mm above the arm-base plane, 166.5 mm toward the opening from the arm-base line |
 
 The design uses 14 supplier-cut extrusions, a shared arm beam, one camera mast, outside-mounted wall panels and removable table clamps. It needs an existing support table. The camera support lengths are proposed construction dimensions; the walls are 80 mm farther apart and the back wall is 40 mm farther back than the simulation's clear wall dimensions.
+
+## Robot model
+
+The viewer loads the official [I2RT YAM v1 URDF](https://github.com/i2rt-robotics/i2rt/blob/120c3c81400171174604e503943f8d1ebc891058/i2rt/robot_models/arm/yam/v1/yam.urdf) and nine unmodified STL meshes, pinned to revision `120c3c81400171174604e503943f8d1ebc891058`. The MIT-licensed assets, upstream license and SHA-256 provenance manifest are in [`public/models/i2rt-yam/`](public/models/i2rt-yam/).
+
+The model is loaded once, then cloned for the two arms. Joint axes, origins, limits and scale come from the URDF. A right-handed coordinate rotation maps URDF X to workspace depth, Y to width and Z to height. The displayed pose uses shoulder and elbow angles of 60 degrees and 20 mm inward travel on each gripper finger. It is an illustrative pose, not a collision check.
+
+Both bases sit on the +30 mm arm-beam datum at 620 mm spacing. The outlined mounting areas do not assert a plate thickness or hole pattern. Account for any real adapter thickness when setting the camera/arm datums. Confirm the model variant matches the installed hardware; YAM Pro, Ultra and other revisions are not represented by this YAM v1 asset.
+
+The approximately 7.5 MB of mesh assets are served alongside the site, with no ROS installation or external model server. The frame remains usable while they load; a failed model request produces a visible error instead of a substitute robot sketch.
 
 ## Build and buy
 
@@ -81,7 +91,9 @@ References: [Vite static deployment](https://vite.dev/guide/static-deploy), [Clo
 ## Project structure
 
 - `src/layout.ts`: enclosure dimensions, in metres.
-- `src/model.ts`: procedural Three.js geometry and part descriptions.
+- `src/model.ts`: procedural frame geometry and part descriptions.
+- `src/yam-model.ts`: URDF loading, joint pose and coordinate conversion.
+- `public/models/i2rt-yam/`: licensed manufacturer robot assets and provenance.
 - `src/compact-bom.ts`: purchasable extrusion and hardware references.
 - `src/shopping.ts`: shopping UI and model-derived received-parts export.
 - `public/`: downloadable BOMs and build documentation.
@@ -90,6 +102,6 @@ Geometry and the static supplier CSVs must be kept in sync when changing the des
 
 ## Sources and license
 
-Reference geometry comes from the public [ABC simulation](https://github.com/amazon-far/abc/blob/6c467cebcecf16a4dce79e6fd87a7ca2281c3ef0/abc_sim/models/yam_bimanual_empty.xml) and the physical setup shown in [the ABC paper, Figure 22](https://abc.bot/abc.pdf). This repository contains procedural visualizations, not robot CAD or model weights. See [NOTICE](NOTICE) for attribution.
+Reference geometry comes from the public [ABC simulation](https://github.com/amazon-far/abc/blob/6c467cebcecf16a4dce79e6fd87a7ca2281c3ef0/abc_sim/models/yam_bimanual_empty.xml) and the physical setup shown in [the ABC paper, Figure 22](https://abc.bot/abc.pdf). The frame is drawn procedurally; robot geometry comes from the MIT-licensed I2RT YAM model. No model weights are included. See [NOTICE](NOTICE) for attribution.
 
 Code and documentation are available under [Apache-2.0](LICENSE). Third-party products and libraries retain their respective licenses and trademarks.

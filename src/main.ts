@@ -49,10 +49,11 @@ application.innerHTML = `
         <label><input id="show-walls" type="checkbox" checked />Show wall panels</label>
         <label><input id="show-work-panel" type="checkbox" checked />Show worktop</label>
         <label><input id="show-connectors" type="checkbox" checked />Show brackets &amp; fixings</label>
-        <label><input id="show-arms" type="checkbox" checked />Show arm sketches</label>
+        <label><input id="show-arms" type="checkbox" checked />Show YAM models</label>
         <label><input id="show-table" type="checkbox" checked />Show existing table</label>
         <label><input id="show-dimensions" type="checkbox" checked />Show dimensions</label>
       </section>
+      <p id="robot-model-status" class="muted" role="status">Loading I2RT YAM models…</p>
       <section class="selected-part" aria-live="polite">
         <div class="eyebrow">PART INSPECTOR <button type="button" id="clear-selection" aria-label="Clear pinned selection">×</button></div>
         <h2 id="part-name">Single camera mast</h2>
@@ -62,7 +63,7 @@ application.innerHTML = `
         <p id="part-position" class="part-position"></p><a id="part-product" target="_blank" rel="noreferrer" hidden>Buy this piece ↗</a><button type="button" id="focus-part" class="secondary-button">Zoom to piece</button><button type="button" id="part-shopping" class="secondary-button">See purchasing list ↗</button>
       </section>
       <section class="parts-section"><div class="section-title"><h2>Explore the assembly</h2><span id="part-count"></span></div><div id="part-list"></div></section>
-      <details class="model-notes"><summary>What this model assumes</summary><p>The camera target comes from ABC’s simulation: 954.3 mm above the arm-base plane, 166.5 mm behind the arm-base line, looking 30° forward from vertical.</p><p>Each extrusion is individually selectable. Its supplied length and profile match the model. Supplier-finished pieces arrive ready to assemble. Arm meshes, adapter plates, joints and the existing table are illustrative. The frame uses butt joints and MISUMI HBLFSN6 brackets. Wall blanks extend down to the table so the lower rails can support them: 1280 mm total, 1250 mm above the work plane. Panel fixings and six removable table clamps are shown. Detailed adapter fit and mounting capacity still need verification. The walls bolt to the outside frame faces, giving 1370 × 935 mm between wall planes: 80 mm wider and 40 mm deeper than ABC. Rails project 30 mm inside the walls. Each side has three bottom notches for the frame and arm-beam clamps. This frame is a proposed construction around the simulation targets, not a verified physical ABC cut list. Actual panel thickness and joinery are detailed separately.</p><p>The 30 mm worktop rests on your table and aligns with the arm beam; tape is proposed to limit sliding. The full floor is your existing table; no duplicate freestanding station is shown.</p><a href="https://abc.bot/abc.pdf#page=23" target="_blank" rel="noreferrer">ABC physical setup reference ↗</a></details>
+      <details class="model-notes"><summary>What this model assumes</summary><p>The camera target comes from ABC’s simulation: 954.3 mm above the arm-base plane, 166.5 mm behind the arm-base line, looking 30° forward from vertical.</p><p>Each extrusion is individually selectable. Its supplied length and profile match the model. Supplier-finished pieces arrive ready to assemble. Arms use the official I2RT YAM v1 URDF and meshes at original scale; the pose is illustrative. Mounting-area outlines, camera adapters, frame joints and the support table remain schematic. Account for real adapter thickness before aligning datums. The frame uses butt joints and MISUMI HBLFSN6 brackets. Wall blanks extend down to the table so the lower rails can support them: 1280 mm total, 1250 mm above the work plane. Panel fixings and six removable table clamps are shown. Detailed adapter fit and mounting capacity still need verification. The walls bolt to the outside frame faces, giving 1370 × 935 mm between wall planes: 80 mm wider and 40 mm deeper than ABC. Rails project 30 mm inside the walls. Each side has three bottom notches for the frame and arm-beam clamps. This frame is a proposed construction around the simulation targets, not a verified physical ABC cut list. Actual panel thickness and joinery are detailed separately.</p><p>The 30 mm worktop rests on your table and aligns with the arm beam; tape is proposed to limit sliding. The full floor is your existing table; no duplicate freestanding station is shown.</p><a href="https://abc.bot/abc.pdf#page=23" target="_blank" rel="noreferrer">ABC physical setup reference ↗</a></details>
       </div><section id="shopping-panel" hidden aria-label="Shopping list and supplied lengths"></section>
     </aside>
   </main>`;
@@ -268,6 +269,11 @@ function updateMaterialHighlight(part?: ModelPart) {
     material.emissiveIntensity = 0;
   }
   highlightedMaterials.clear();
+  for (const candidate of parts) {
+    for (const outline of candidate.outlines) {
+      outline.material.color.setHex(candidate === part ? 0x2b90aa : 0x60777f);
+    }
+  }
   for (const surface of part?.surfaces ?? []) {
     surface.material.emissive.setHex(0x2b90aa);
     surface.material.emissiveIntensity = 0.35;
@@ -312,7 +318,7 @@ const categoryNames: Record<PartCategory, string> = {
   camera: "Camera support",
   structure: "Frame & mounting",
   panels: "Enclosure panels",
-  arms: "Robot sketches",
+  arms: "I2RT YAM models",
   table: "Existing table",
 };
 const partList = requireElement<HTMLDivElement>("#part-list");
@@ -446,6 +452,7 @@ requireElement("#focus-part").addEventListener("click", () => {
   );
   if (!part) return;
   const bounds = new THREE.Box3().setFromObject(part.object);
+  if (bounds.isEmpty()) return;
   const center = bounds.getCenter(new THREE.Vector3());
   const extent = bounds.getSize(new THREE.Vector3()).length();
   const preferredDirection = part.object.userData.inspectionDirection;
@@ -470,6 +477,7 @@ requireElement("#clear-selection").addEventListener("click", () => {
   if (defaultPart) inspectPart(defaultPart);
 });
 const raycaster = new THREE.Raycaster();
+raycaster.params.Line.threshold = 0.004;
 const normalizedPointer = new THREE.Vector2();
 let pointerDownPosition = new THREE.Vector2();
 function pickPart(event: PointerEvent): ModelPart | undefined {
@@ -481,7 +489,7 @@ function pickPart(event: PointerEvent): ModelPart | undefined {
   raycaster.setFromCamera(normalizedPointer, camera);
   const visibleSurfaces = parts
     .filter((part) => part.object.visible)
-    .flatMap((part) => part.surfaces);
+    .flatMap((part): THREE.Object3D[] => [...part.surfaces, ...part.outlines]);
   const intersections = raycaster.intersectObjects(visibleSurfaces, false);
   const preferredIntersection = ghostWalls
     ? (intersections.find(
@@ -563,3 +571,19 @@ setView("perspective");
 const initialPart = partsById.get("camera-mast");
 if (initialPart) inspectPart(initialPart);
 document.documentElement.dataset.viewerReady = "true";
+document.documentElement.dataset.robotModelState = "loading";
+void import("./yam-model")
+  .then(({ loadYamArms }) => loadYamArms(parts))
+  .then(() => {
+    requireElement("#robot-model-status").textContent =
+      "I2RT YAM v1 · manufacturer URDF and meshes loaded";
+    document.documentElement.dataset.robotModelState = "ready";
+    updateVisibility();
+    updateMaterialHighlight(hoveredPart ?? pinnedPart);
+  })
+  .catch((error: unknown) => {
+    console.error("Could not load I2RT YAM models", error);
+    requireElement("#robot-model-status").textContent =
+      "YAM models could not load. Reload to retry; frame and BOM remain available.";
+    document.documentElement.dataset.robotModelState = "error";
+  });

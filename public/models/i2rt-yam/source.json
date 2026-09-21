@@ -1,0 +1,59 @@
+{
+  "repository": "https://github.com/i2rt-robotics/i2rt",
+  "revision": "120c3c81400171174604e503943f8d1ebc891058",
+  "upstreamDirectory": "i2rt/robot_models/arm/yam/v1/",
+  "license": "MIT",
+  "modifications": "None. Coordinate conversion and display pose are applied at runtime.",
+  "assets": [
+    {
+      "path": "yam.urdf",
+      "bytes": 9041,
+      "sha256": "c0967cf85c4904a142c3aa2bb7453af609354ee94997900040fd0b3e1b756bb8"
+    },
+    {
+      "path": "assets/base.stl",
+      "bytes": 437784,
+      "sha256": "d95a5aa0c06a5ef6da02788b0df5a14e4202c1ae8eb2771a7f6f8947e3a490c7"
+    },
+    {
+      "path": "assets/gripper.stl",
+      "bytes": 379584,
+      "sha256": "e0dad958755f0a9d58e6bea4f16fed2849146ae81c0dbd45487aff308cb49e58"
+    },
+    {
+      "path": "assets/link1.stl",
+      "bytes": 308684,
+      "sha256": "41f7dfbd0471a0f96884c73782e82927f2bbc6aced9b55c0111da1b52d6e0c50"
+    },
+    {
+      "path": "assets/link2.stl",
+      "bytes": 1495784,
+      "sha256": "067b51567a95a631d50fc02515bd045a2eb7f2f34489d5aec31d9f3f6ce58b30"
+    },
+    {
+      "path": "assets/link3.stl",
+      "bytes": 1507584,
+      "sha256": "9650a114393881b54a68822ba3fb48fcd3318023ebecaf251e4f7804e91f801c"
+    },
+    {
+      "path": "assets/link4.stl",
+      "bytes": 185484,
+      "sha256": "42740ce2bb8693760a35dc6e9e8fe0981999c02d6bf167a465c9936acf41c557"
+    },
+    {
+      "path": "assets/link5.stl",
+      "bytes": 56884,
+      "sha256": "f70eb1191d6a1ccbb748a46fe8ba541f38094c9829fd1859300e70360c5a07c7"
+    },
+    {
+      "path": "assets/tip_left.stl",
+      "bytes": 1555584,
+      "sha256": "281354d77e4914ccd994b6c71fecce49a91527701f268d318f801769a6913685"
+    },
+    {
+      "path": "assets/tip_right.stl",
+      "bytes": 1555484,
+      "sha256": "070925233d4b742c05c4d5508e951deba5947c2fabfa336a4e33db599c70ac3a"
+    }
+  ]
+}

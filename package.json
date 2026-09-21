@@ -12,7 +12,8 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
-    "three": "0.186.0"
+    "three": "0.186.0",
+    "urdf-loader": "^0.13.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

@@ -15,3 +15,16 @@ mounting, tabletop clamps and a single camera support. It is not an official
 ABC fabrication drawing or a manufacturer-approved robot mounting assembly.
 
 Three.js and other dependencies are distributed under their own licenses.
+
+Robot assets: I2RT YAM v1
+Source: https://github.com/i2rt-robotics/i2rt
+Revision: 120c3c81400171174604e503943f8d1ebc891058
+Directory: i2rt/robot_models/arm/yam/v1
+Copyright (c) I2RT Robotics. Distributed under MIT.
+URDF and STL assets are unmodified. The viewer applies a coordinate rotation,
+an illustrative joint pose and standard rendering materials at runtime.
+The upstream license and asset hashes accompany the files in public/models/i2rt-yam.
+
+URDF loading: urdf-loader 0.13.1 by Garrett Johnson and contributors
+Source: https://github.com/gkjohnson/urdf-loaders
+Distributed under Apache License 2.0.
