@@ -35,6 +35,8 @@ Frame rails occupy 30 mm strips inside the walls at their heights. Clamps and th
 
 Total: **14 extrusions, 13.94 m**, plus **18 bare brackets**. The 3030 profiles are silver clear-anodized GFS6 high-rigidity extrusions. The 3090 beam is clear-anodized HFS6, laid flat with its 90 mm face on top. Brackets are bare parts, without bundled screws or nuts.
 
+The viewer uses these silver finishes for every extrusion, including all three camera-support bars. HBLFSN6 brackets have a natural cast-metal finish; W3982 clamp bodies are black with steel screw hardware. Panels display the proposed white finish. Table, camera body, adapters and reused screw finishes are illustrative, since their exact products have not been specified. Orange sight/dimension lines and colored hover highlights are viewer annotations, not painted hardware.
+
 Side rails butt between full-height posts: 875 + 30 + 30 = 935 mm outside depth. Rear rails similarly give 1310 + 30 + 30 = 1370 mm outside width. Camera-support lengths provide adjustment room and are proposed construction dimensions, not measurements of ABC's physical single-mast assembly.
 
 The [extrusions-only CSV](misumi-extrusions-upload.csv), [custom supplier quote](custom-extrusion-quote.csv) and [paste-ready TSV](misumi-quote-paste.tsv) duplicate relevant items from the main CSV. Do not add them to the same order as additional parts.

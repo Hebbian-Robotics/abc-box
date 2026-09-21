@@ -465,22 +465,22 @@ h2 {
   flex-shrink: 0;
   background: #8b9eaa;
 }
-.part-dot.camera {
-  background: #b76c30;
-}
+.part-dot.camera,
 .part-dot.structure {
-  background: #354b59;
+  background: #c8cacc;
+  border: 1px solid #8b8d8f;
 }
 .part-dot.connectors {
-  background: #a0abb2;
-  border: 1px solid #677c87;
+  background: #b2b4b6;
+  border: 1px solid #77797b;
 }
 .part-dot.panels {
-  background: #c4d3dc;
-  border: 1px solid #9caebb;
+  background: #f4f4f1;
+  border: 1px solid #9c9e9f;
 }
 .part-dot.arms {
-  background: #758d94;
+  background: linear-gradient(90deg, #efefeb 50%, #252628 50%);
+  border: 1px solid #77797b;
 }
 .part-arrow {
   margin-left: auto;

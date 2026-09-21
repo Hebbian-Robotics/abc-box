@@ -33,12 +33,18 @@ export interface ModelPart {
   outlines: THREE.LineLoop<THREE.BufferGeometry, THREE.LineBasicMaterial>[];
 }
 export const palette = {
-  structure: 0x354b59,
-  camera: 0xb76c30,
-  panels: 0xe0e7eb,
+  structure: 0xc8cacc,
+  camera: 0xc8cacc,
+  panels: 0xf4f4f1,
   arms: 0xe8eeed,
-  table: 0xa9b8c1,
-  connectors: 0xa0abb2,
+  table: 0xbababa,
+  connectors: 0xb2b4b6,
+};
+const hardwareFinishes = {
+  slotShadow: 0x46484a,
+  blackCoating: 0x252628,
+  steel: 0xb8babc,
+  unselectedAdapter: 0x949698,
 };
 export const targets = {
   armBaseHeight: 0.03,
@@ -68,8 +74,8 @@ export function createWorkcell(
   ): THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial> {
     const material = new THREE.MeshStandardMaterial({
       color,
-      roughness: 0.62,
-      metalness: part.description.category === "structure" ? 0.55 : 0.15,
+      roughness: part.description.extrusion ? 0.45 : 0.62,
+      metalness: part.description.extrusion ? 0.45 : 0.15,
     });
     const surface = new THREE.Mesh(geometry, material);
     surface.position.copy(position);
@@ -106,10 +112,12 @@ export function createWorkcell(
     const lengthMm = sortedDimensions[2] ?? 0;
     const part = createPart({
       ...description,
-      dimensions: `${profile} profile · ${lengthMm} mm supplied length · no trimming · ${sortedDimensions[0]} × ${sortedDimensions[1]} mm section`,
+      dimensions: `${profile} profile · ${lengthMm} mm supplied length · no trimming · silver clear anodize · ${sortedDimensions[0]} × ${sortedDimensions[1]} mm section`,
       extrusion: { profile, lengthMm },
     });
-    addBox(part, dimensions, position, palette[description.category]);
+    // All purchased profiles have the same clear-anodized silver finish,
+    // including the camera support; category colors are not physical finishes.
+    addBox(part, dimensions, position, palette.structure);
     const [width = 0.03, height = 0.03, depth = 0.03] = dimensions;
     const [horizontal = 0, vertical = 0, longitudinal = 0] = position;
     // Recess lines communicate the slotted profile; they are not machining geometry.
@@ -119,7 +127,7 @@ export function createWorkcell(
           part,
           [0.006, height * 0.98, 0.001],
           [horizontal, vertical, longitudinal + side * (depth / 2 + 0.0005)],
-          0x182832,
+          hardwareFinishes.slotShadow,
         );
       }
     } else if (width > depth) {
@@ -129,7 +137,7 @@ export function createWorkcell(
             part,
             [width * 0.99, 0.001, 0.004],
             [horizontal, vertical + height / 2 + 0.0005, longitudinal + offset],
-            0x172b35,
+            hardwareFinishes.slotShadow,
           );
         }
       }
@@ -138,7 +146,7 @@ export function createWorkcell(
         part,
         [0.006, 0.001, depth * 0.98],
         [horizontal, vertical + height / 2 + 0.0005, longitudinal],
-        0x172b35,
+        hardwareFinishes.slotShadow,
       );
     }
     return part;
@@ -169,7 +177,7 @@ export function createWorkcell(
         table,
         [0.045, 0.715, 0.045],
         [horizontal, -0.3925, depth],
-        0x8397a3,
+        0x97999b,
       );
     }
   }
@@ -248,7 +256,7 @@ export function createWorkcell(
     camera,
     [0.07, 0.037, 0.036],
     [0, cameraCenterHeight, targets.cameraDepth],
-    0x273541,
+    hardwareFinishes.blackCoating,
   );
   cameraBody.rotation.x = Math.PI / 3;
   const cameraLens = addSurface(
@@ -298,7 +306,7 @@ export function createWorkcell(
         "https://us.misumi-ec.com/vona2/detail/110300442340/?HissuCode=HBLFSN6",
       dimensions: "MISUMI HBLFSN6 · 30 × 30 × 30 mm · 2 × M6 × 12 screws",
       confidence: "Proposed part",
-      description: `${jointDescription} One MISUMI HBLFSN6 bracket, two M6 × 12 socket-head screws (catalog reference CBM6-12), and two HNTT6-6 nuts. Reuse matching screws; purchase list contains bare brackets, not SET kits. Envelope follows the catalog; tabs, ribs and holes are simplified.`,
+      description: `${jointDescription} One MISUMI HBLFSN6 bracket in its natural cast-metal finish, two M6 × 12 socket-head screws (catalog reference CBM6-12), and two HNTT6-6 nuts. Reuse matching screws; purchase list contains bare brackets, not SET kits. Envelope follows the catalog; tabs, ribs and holes are simplified.`,
       positionNote:
         "Each silver bracket is a separate item. The two screw heads and hidden T-nuts belong to this connection; use Zoom to piece for a close view.",
     });
@@ -348,7 +356,7 @@ export function createWorkcell(
           bevelEnabled: false,
         }),
         new THREE.Vector3(0, 0, side * (bracketWidth / 2 - 0.002)),
-        0x84959e,
+        palette.connectors,
       );
     }
     for (const [boltPosition, boltAxis, nutPosition] of [
@@ -367,7 +375,7 @@ export function createWorkcell(
         part,
         new THREE.CylinderGeometry(0.005, 0.005, 0.004, 6),
         boltPosition,
-        0x364952,
+        hardwareFinishes.blackCoating,
       );
       boltHead.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, 1, 0),
@@ -377,7 +385,7 @@ export function createWorkcell(
         part,
         [0.016, 0.006, 0.016],
         nutPosition.toArray(),
-        0x6c7980,
+        hardwareFinishes.steel,
       );
       slotNut.quaternion.copy(boltHead.quaternion);
     }
@@ -480,15 +488,15 @@ export function createWorkcell(
       part,
       new THREE.CylinderGeometry(0.008, 0.008, 0.0015, 20),
       new THREE.Vector3(0, 0.00075, 0),
-      0xb8c2c7,
+      hardwareFinishes.steel,
     );
     addSurface(
       part,
       new THREE.CylinderGeometry(0.0045, 0.0045, 0.004, 6),
       new THREE.Vector3(0, 0.0035, 0),
-      0x354953,
+      hardwareFinishes.blackCoating,
     );
-    addBox(part, [0.016, 0.006, 0.016], [0, -0.017, 0], 0x78868d);
+    addBox(part, [0.016, 0.006, 0.016], [0, -0.017, 0], hardwareFinishes.steel);
   }
   for (const side of [-1, 1]) {
     const sideName = side === -1 ? "Left" : "Right";
@@ -539,13 +547,13 @@ export function createWorkcell(
     cameraAdapter,
     [0.035, 0.003, 0.03],
     [0, cameraCenterHeight - 0.0285, targets.cameraDepth],
-    0x60777f,
+    hardwareFinishes.unselectedAdapter,
   );
   addBox(
     cameraAdapter,
     [0.035, 0.0285, 0.003],
     [0, cameraCenterHeight - 0.01275, targets.cameraDepth - 0.0135],
-    0x60777f,
+    hardwareFinishes.unselectedAdapter,
   );
   for (const side of [-1, 1]) {
     const sideName = side === -1 ? "Left" : "Right";
@@ -577,27 +585,47 @@ export function createWorkcell(
       });
       tableClamp.object.position.set(horizontal, 0, depth);
       tableClamp.object.rotation.y = rotation;
-      addBox(tableClamp, [0.2032, 0.02, 0.02], [0.1016, 0.065, 0], 0x426274);
-      addBox(tableClamp, [0.02, 0.155, 0.025], [0.2132, -0.0025, 0], 0x426274);
-      addBox(tableClamp, [0.2232, 0.02, 0.02], [0.1016, -0.08, 0], 0x426274);
-      addBox(tableClamp, [0.024, 0.025, 0.024], [0, 0.0425, 0], 0x657c86);
+      addBox(
+        tableClamp,
+        [0.2032, 0.02, 0.02],
+        [0.1016, 0.065, 0],
+        hardwareFinishes.blackCoating,
+      );
+      addBox(
+        tableClamp,
+        [0.02, 0.155, 0.025],
+        [0.2132, -0.0025, 0],
+        hardwareFinishes.blackCoating,
+      );
+      addBox(
+        tableClamp,
+        [0.2232, 0.02, 0.02],
+        [0.1016, -0.08, 0],
+        hardwareFinishes.blackCoating,
+      );
+      addBox(
+        tableClamp,
+        [0.024, 0.025, 0.024],
+        [0, 0.0425, 0],
+        hardwareFinishes.blackCoating,
+      );
       addSurface(
         tableClamp,
         new THREE.CylinderGeometry(0.011, 0.011, 0.004, 16),
         new THREE.Vector3(0, -0.037, 0),
-        0xaab7bd,
+        hardwareFinishes.steel,
       );
       addSurface(
         tableClamp,
         new THREE.CylinderGeometry(0.0045, 0.0045, 0.105, 12),
         new THREE.Vector3(0, -0.0915, 0),
-        0x899ba5,
+        hardwareFinishes.steel,
       );
       const handle = addSurface(
         tableClamp,
         new THREE.CylinderGeometry(0.003, 0.003, 0.06, 12),
         new THREE.Vector3(0, -0.137, 0),
-        0xaab7bd,
+        hardwareFinishes.steel,
       );
       handle.rotation.z = Math.PI / 2;
     }
@@ -617,7 +645,7 @@ export function createWorkcell(
     workSurface,
     [layout.workPanelWidth, 0.03, layout.workPanelDepth],
     [0, 0.015, 0.3025 + layout.workPanelDepth / 2],
-    0xf3f4ee,
+    palette.panels,
   );
   const wallTop = layout.frameHeight;
   for (const side of [-1, 1]) {

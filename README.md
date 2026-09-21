@@ -19,6 +19,8 @@ This is an independent construction proposal based on public [ABC](https://abc.b
 
 The design uses 14 supplier-cut extrusions, a shared arm beam, one camera mast, outside-mounted wall panels and removable table clamps. It needs an existing support table. The camera support lengths are proposed construction dimensions; the walls are 80 mm farther apart and the back wall is 40 mm farther back than the simulation's clear wall dimensions.
 
+Physical parts use supplier finishes in the viewer: silver clear-anodized GFS6/HFS6 extrusions throughout, including the camera mast, foot and offset; natural cast-metal HBLFSN6 brackets; and black W3982 clamp bodies with steel screws. Panels show the proposed white finish. Table, camera body, adapters and reused fasteners remain illustrative where no exact product or finish is specified. Lighting and screen rendering approximate appearance; colored dimension lines, the camera sight line and hover highlights are annotations.
+
 The example table's front edge sits 75 mm inside the enclosure. Four clamps enter through the open front: two hold the arm beam and two angle inward to hold the side rails. All three wall panels are rectangular, with no clamp cutouts. The front posts overhang the table by 75 mm and the camera foot by 167.5 mm. The clamp bodies are approximate, with only about 2.5 mm nominal pad-to-wall clearance; actual fit, cantilever support and holding capacity remain unverified. This layout preserves all extrusion lengths and arm/camera positions.
 
 ## Robot model
