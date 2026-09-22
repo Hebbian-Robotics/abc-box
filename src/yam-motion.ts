@@ -17,6 +17,7 @@ const abovePlace: ArmAngles = [34.01, 85.46, 76.92, -81.45, 0, 34.01];
 const place: ArmAngles = [34.01, 90, 52.17, -52.16, 0, 34.01];
 const openFingers = -0.004;
 const closedFingers = -0.03;
+const playbackSpeed = 2;
 
 const keyframes: readonly DemoKeyframe[] = [
   { seconds: 0, anglesDegrees: rest, fingerTravel: -0.02 },
@@ -37,7 +38,8 @@ export function getYamDemoJointValues(
   elapsedSeconds: number,
   side: "left" | "right",
 ) {
-  const loopSeconds = ((elapsedSeconds % 18) + 18) % 18;
+  const timelineSeconds = elapsedSeconds * playbackSpeed;
+  const loopSeconds = ((timelineSeconds % 18) + 18) % 18;
   const destinationIndex = keyframes.findIndex(
     (keyframe) => keyframe.seconds > loopSeconds,
   );
