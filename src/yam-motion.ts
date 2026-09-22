@@ -20,7 +20,7 @@ const closedFingers = -0.03;
 const playbackSpeed = 2;
 
 const keyframes: readonly DemoKeyframe[] = [
-  { seconds: 0, anglesDegrees: rest, fingerTravel: -0.02 },
+  { seconds: 0, anglesDegrees: rest, fingerTravel: openFingers },
   { seconds: 2, anglesDegrees: abovePick, fingerTravel: openFingers },
   { seconds: 4, anglesDegrees: pick, fingerTravel: openFingers },
   { seconds: 5, anglesDegrees: pick, fingerTravel: closedFingers },
@@ -31,7 +31,7 @@ const keyframes: readonly DemoKeyframe[] = [
   { seconds: 13, anglesDegrees: place, fingerTravel: openFingers },
   { seconds: 14.5, anglesDegrees: abovePlace, fingerTravel: openFingers },
   { seconds: 16, anglesDegrees: lifted, fingerTravel: openFingers },
-  { seconds: 18, anglesDegrees: rest, fingerTravel: -0.02 },
+  { seconds: 18, anglesDegrees: rest, fingerTravel: openFingers },
 ];
 
 export function getYamDemoJointValues(
