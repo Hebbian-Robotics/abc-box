@@ -14,6 +14,7 @@ import {
   type LengthUnit,
 } from "./units";
 import "./style.css";
+import type { YamArmMotion } from "./yam-model";
 
 function requireElement<ElementType extends HTMLElement>(
   selector: string,
@@ -47,6 +48,7 @@ application.innerHTML = `
         <button type="button" id="reset-view" aria-label="Reset view">↺</button>
       </nav>
       <div class="model-caption"><span class="caption-line"></span>ABC WORKSPACE · COMPACT SUPPLIER-CUT FRAME</div>
+      <div class="motion-controls" role="group" aria-label="Arm motion demo"><div><button type="button" id="toggle-arm-motion" aria-pressed="false" aria-describedby="motion-note" disabled>▶ Animate arms</button><button type="button" id="reset-arm-pose" disabled>Reset pose</button></div><p id="motion-note">Illustrative motion · no collision simulation</p></div>
       <div id="tooltip" role="tooltip" hidden></div>
       <div class="viewer-footer"><span>Drag to orbit · Scroll to zoom · Right-drag to pan</span><span>Hover to inspect · Click to pin</span></div>
       <div class="axis-key"><span class="axis-width">— Width</span><span class="axis-depth">— Depth into box</span><span class="axis-height">— Height</span></div>
@@ -288,9 +290,60 @@ const visibleCategories = new Set<PartCategory>([
   "arms",
   "table",
 ]);
+const motionButton = requireElement<HTMLButtonElement>("#toggle-arm-motion");
+const resetPoseButton = requireElement<HTMLButtonElement>("#reset-arm-pose");
+let armMotion: YamArmMotion | undefined;
+let isArmMotionPlaying = true;
+let animationElapsedSeconds = 0;
+let previousAnimationTimestamp: number | undefined;
+let animationFrameId: number | undefined;
 function render() {
   renderer.render(scene, camera);
 }
+function advanceArmMotion(timestamp: number) {
+  if (previousAnimationTimestamp !== undefined) {
+    animationElapsedSeconds += Math.min(
+      (timestamp - previousAnimationTimestamp) / 1000,
+      0.1,
+    );
+  }
+  previousAnimationTimestamp = timestamp;
+  armMotion?.setAnimationTime(animationElapsedSeconds);
+  render();
+  animationFrameId = requestAnimationFrame(advanceArmMotion);
+}
+function syncArmMotionPlayback() {
+  if (animationFrameId !== undefined) cancelAnimationFrame(animationFrameId);
+  animationFrameId = undefined;
+  previousAnimationTimestamp = undefined;
+  const canAnimate =
+    isArmMotionPlaying &&
+    armMotion &&
+    !document.hidden &&
+    visibleCategories.has("arms");
+  if (canAnimate) animationFrameId = requestAnimationFrame(advanceArmMotion);
+  motionButton.textContent = isArmMotionPlaying
+    ? "❚❚ Pause arms"
+    : "▶ Animate arms";
+  motionButton.setAttribute("aria-pressed", String(isArmMotionPlaying));
+  document.documentElement.dataset.armMotionState = canAnimate
+    ? "playing"
+    : "paused";
+}
+motionButton.addEventListener("click", () => {
+  if (!armMotion) return;
+  isArmMotionPlaying = !isArmMotionPlaying;
+  tooltip.hidden = true;
+  syncArmMotionPlayback();
+});
+resetPoseButton.addEventListener("click", () => {
+  isArmMotionPlaying = false;
+  animationElapsedSeconds = 0;
+  armMotion?.setAnimationTime(0);
+  syncArmMotionPlayback();
+  render();
+});
+document.addEventListener("visibilitychange", syncArmMotionPlayback);
 controls.addEventListener("change", render);
 function updateMaterialHighlight(part?: ModelPart) {
   for (const material of highlightedMaterials) {
@@ -407,6 +460,7 @@ function updateVisibility() {
       surface.castShadow = !(isWall && ghostWalls);
     }
   }
+  syncArmMotionPlayback();
   render();
 }
 requireElement<HTMLInputElement>("#ghost-walls").addEventListener(
@@ -669,7 +723,10 @@ document.documentElement.dataset.viewerReady = "true";
 document.documentElement.dataset.robotModelState = "loading";
 void import("./yam-model")
   .then(({ loadYamArms }) => loadYamArms(parts))
-  .then(() => {
+  .then((loadedArmMotion) => {
+    armMotion = loadedArmMotion;
+    motionButton.disabled = false;
+    resetPoseButton.disabled = false;
     requireElement("#robot-model-status").textContent =
       "I2RT YAM v1 · manufacturer URDF and meshes loaded";
     document.documentElement.dataset.robotModelState = "ready";

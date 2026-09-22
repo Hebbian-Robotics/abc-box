@@ -1,6 +1,11 @@
 import * as THREE from "three";
 import URDFLoader, { type URDFRobot } from "urdf-loader";
 import type { ModelPart } from "./model";
+import { getYamDemoJointValues } from "./yam-motion";
+
+export interface YamArmMotion {
+  setAnimationTime(elapsedSeconds: number): void;
+}
 
 function applyWhiteCoverColors(geometry: THREE.BufferGeometry): void {
   const positions = geometry.getAttribute("position");
@@ -45,8 +50,9 @@ function loadYamRobot(): Promise<URDFRobot> {
   });
 }
 
-export async function loadYamArms(parts: ModelPart[]): Promise<void> {
+export async function loadYamArms(parts: ModelPart[]): Promise<YamArmMotion> {
   const robotTemplate = await loadYamRobot();
+  const animatedArms: { robot: URDFRobot; side: "left" | "right" }[] = [];
   // Right-handed change of basis: URDF X -> depth, Y -> width, Z -> up.
   const coordinateRotation = new THREE.Matrix4().makeBasis(
     new THREE.Vector3(0, 0, 1),
@@ -58,16 +64,9 @@ export async function loadYamArms(parts: ModelPart[]): Promise<void> {
   )) {
     const robot = robotTemplate.clone();
     robot.setRotationFromMatrix(coordinateRotation);
-    robot.setJointValues({
-      joint1: 0,
-      joint2: Math.PI / 3,
-      joint3: Math.PI / 3,
-      joint4: 0,
-      joint5: 0,
-      joint6: 0,
-      joint7: -0.02,
-      joint8: -0.02,
-    });
+    const side = armPart.description.id === "left-arm" ? "left" : "right";
+    robot.setJointValues(getYamDemoJointValues(0, side));
+    animatedArms.push({ robot, side });
     const whiteCoverObjects = new Set<THREE.Object3D>();
     for (const linkName of ["link2", "link3"]) {
       for (const child of robot.links[linkName]?.children ?? []) {
@@ -102,4 +101,11 @@ export async function loadYamArms(parts: ModelPart[]): Promise<void> {
     });
     armPart.object.add(robot);
   }
+  return {
+    setAnimationTime(elapsedSeconds) {
+      for (const { robot, side } of animatedArms) {
+        robot.setJointValues(getYamDemoJointValues(elapsedSeconds, side));
+      }
+    },
+  };
 }

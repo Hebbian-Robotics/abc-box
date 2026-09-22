@@ -104,6 +104,36 @@ h1 {
   background: #254d61;
   color: white;
 }
+.motion-controls {
+  position: absolute;
+  z-index: 2;
+  right: 24px;
+  bottom: 64px;
+  text-align: right;
+}
+.motion-controls > div {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #b8cbd6;
+  border-radius: 6px;
+  background: #f9fbfc;
+}
+.motion-controls button {
+  border: 0;
+  border-radius: 3px;
+  padding: 9px 12px;
+  background: transparent;
+  font-size: 12px;
+}
+.motion-controls button:first-child {
+  background: #254d61;
+  color: white;
+}
+.motion-controls button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
 .status-dot {
   width: 6px;
   height: 6px;
@@ -230,6 +260,11 @@ p {
   font-size: 12px;
   line-height: 1.65;
   color: #546e7e;
+}
+.motion-controls p {
+  margin: 5px 0 0;
+  font-size: 9px;
+  color: #627e8d;
 }
 .sidebar-tabs {
   display: flex;
@@ -578,6 +613,10 @@ h2 {
   }
 }
 @media (max-width: 680px) {
+  .motion-controls {
+    right: 12px;
+    bottom: 101px;
+  }
   .app-header {
     height: 73px;
     padding: 0 17px;
