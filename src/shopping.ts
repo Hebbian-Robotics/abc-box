@@ -5,6 +5,12 @@ import {
 } from "./compact-bom";
 import type { WorkcellLayout } from "./layout";
 import type { ModelPart } from "./model";
+import {
+  formatLengthValue,
+  formatMeasurementText,
+  getMeasurementTextNodes,
+  type LengthUnit,
+} from "./units";
 
 interface ShoppingItem {
   name: string;
@@ -88,7 +94,11 @@ export function renderShoppingList(
   container: HTMLElement,
   parts: ModelPart[],
   layout: WorkcellLayout,
+  unit: LengthUnit,
 ) {
+  const expandedDetails = Array.from(container.querySelectorAll("details")).map(
+    (details) => details.open,
+  );
   const shoppingItems = getShoppingItems();
   const extrusionGroups = new Map<
     string,
@@ -114,9 +124,9 @@ export function renderShoppingList(
     <p class="shopping-note">This is a proposed build list. Each bar is shown at the length you receive. MISUMI supplies the extrusions cut to your order. Arm/camera adapter fit and mounting loads still need resolution. The frame uses matching MISUMI profiles, brackets and slot nuts; panel fastener lengths follow the actual panel stack. Linked listings match the stated product specifications; live availability and selected variants may change.</p>
     <details class="build-details" open><summary>BOM downloads</summary><p>Check MISUMI’s quote for current prices and delivery dates.</p><p><a href="${import.meta.env.BASE_URL}misumi-compact-purchase.csv" download>Download bars + 18 bare brackets (CSV) ↓</a></p><p><a href="${import.meta.env.BASE_URL}misumi-compact-optional-nuts.csv" download>Compatible T-nuts — only if needed (CSV) ↓</a></p><p><a href="${import.meta.env.BASE_URL}misumi-compact-optional-caps.csv" download>Optional finishing caps (CSV) ↓</a></p><p><a href="${import.meta.env.BASE_URL}compact-build-list.md" target="_blank">Full build list, hardware checklist and panel details ↗</a></p></details>
     <h3 class="shopping-heading">Bars as purchased</h3>
-    <table class="cut-table"><thead><tr><th>Profile</th><th>Length / mm</th><th>Qty</th></tr></thead><tbody>${groups.map((group) => `<tr><td>${group.profile}</td><td>${group.lengthMm}</td><td>${group.names.length}</td></tr>`).join("")}</tbody></table>
-    <p class="muted">14 installed extrusions. Supplied lengths match the model exactly.</p>
-    <button type="button" id="download-cut-list" class="secondary-button">Download received-parts list (CSV) ↓</button>
+    <table class="cut-table"><thead><tr><th>Profile</th><th>Length / ${unit}</th><th>Qty</th></tr></thead><tbody>${groups.map((group) => `<tr><td>${group.profile}</td><td>${formatLengthValue(group.lengthMm, unit)}</td><td>${group.names.length}</td></tr>`).join("")}</tbody></table>
+    <p class="muted">14 installed extrusions. Inch displays are rounded to two decimals. Profile names, metric fastener designations and supplier part numbers stay unchanged. All order CSVs and downloadable build documents retain their original metric dimensions.</p>
+    <button type="button" id="download-cut-list" class="secondary-button">Download received-parts list (metric CSV) ↓</button>
     <p><a href="${import.meta.env.BASE_URL}compact-build-list.md" download>Download build list (Markdown) ↓</a></p>
     <h3 class="shopping-heading">Shopping links</h3>
     <div class="shopping-cards">${shoppingItems
@@ -137,6 +147,13 @@ export function renderShoppingList(
     </details>
     <p class="muted"><a href="https://github.com/Hebbian-Robotics/abc-box" target="_blank" rel="noreferrer">Source code</a> · <a href="${import.meta.env.BASE_URL}LICENSE.txt" target="_blank">Project license</a> · <a href="${import.meta.env.BASE_URL}NOTICE.txt" target="_blank">Attribution</a> · <a href="${import.meta.env.BASE_URL}THIRD_PARTY_LICENSES.txt" target="_blank">Third-party licenses</a></p>
     <p class="muted">Sources: product pages linked above; ABC geometry in the model inspector. Check current supplier specifications, pricing and availability before ordering.</p>`;
+  for (const node of getMeasurementTextNodes(container)) {
+    node.data = formatMeasurementText(node.data, unit);
+  }
+  container.querySelectorAll("details").forEach((details, index) => {
+    if (expandedDetails[index] !== undefined)
+      details.open = expandedDetails[index];
+  });
   container
     .querySelector("#download-cut-list")
     ?.addEventListener("click", () => {

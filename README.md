@@ -61,6 +61,8 @@ pnpm dev
 
 Open the local URL printed by Vite. Drag to orbit, scroll to zoom, or choose Front, Side and Top views. Select individual parts from the list or directly in the scene. The walls default to 75% opacity; turn off **Transparent walls** for solid panels.
 
+Use the **mm / in** toggle in the header to switch dimensions throughout the viewer, including 3D labels, hover tooltips, part details, notes and shopping tables. The browser remembers your preference when storage is available. Inches are rounded to two decimals; geometry and supplier cut lengths do not change. Profile identifiers, metric fastener designations, supplier part numbers, order CSVs and downloadable build documents retain their original metric specifications.
+
 ```sh
 pnpm format
 pnpm typecheck

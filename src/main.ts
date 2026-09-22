@@ -8,6 +8,11 @@ import {
   targets,
 } from "./model";
 import { getBarProduct, renderShoppingList } from "./shopping";
+import {
+  formatMeasurementText,
+  getMeasurementTextNodes,
+  type LengthUnit,
+} from "./units";
 import "./style.css";
 
 function requireElement<ElementType extends HTMLElement>(
@@ -18,12 +23,18 @@ function requireElement<ElementType extends HTMLElement>(
   return element;
 }
 const selectedLayout = getLayout();
+let selectedUnit: LengthUnit = "mm";
+try {
+  if (localStorage.getItem("abc-box-length-unit") === "in") selectedUnit = "in";
+} catch {
+  // The viewer also works when browser storage is unavailable.
+}
 const frameDimensions = `${Math.round(selectedLayout.frameWidth * 1000)} × ${Math.round(selectedLayout.frameDepth * 1000)} × ${Math.round(selectedLayout.frameHeight * 1000)}`;
 const application = requireElement<HTMLDivElement>("#app");
 application.innerHTML = `
   <header class="app-header">
     <div class="identity"><span class="identity-mark" aria-hidden="true">⌖</span><div><div class="eyebrow">ABC / OPENYAM</div><h1>ABC Box</h1></div></div>
-    <div class="header-note"><span class="status-dot"></span>Supplier-cut tabletop frame <span class="separator">/</span> Dimensions in mm</div>
+    <div class="header-controls"><div class="header-note"><span class="status-dot"></span>Supplier-cut tabletop frame</div><div class="unit-toggle" role="group" aria-label="Dimension units"><button type="button" data-unit="mm" aria-label="Millimetres" aria-pressed="true">mm</button><button type="button" data-unit="in" aria-label="Inches" aria-pressed="false">in</button></div></div>
   </header>
   <main class="workspace">
     <section class="viewer" aria-label="Interactive 3D workcell">
@@ -43,7 +54,7 @@ application.innerHTML = `
     <aside class="inspector" aria-label="Model controls and part information">
       <nav class="sidebar-tabs" aria-label="Sidebar section"><button type="button" id="assembly-tab" class="active" aria-pressed="true" aria-controls="assembly-panel">Assembly</button><button type="button" id="shopping-tab" aria-pressed="false" aria-controls="shopping-panel">Shopping list ↗</button></nav>
       <div id="assembly-panel">
-      <section class="envelope"><div class="eyebrow">BARS AS PURCHASED</div><p class="muted">MISUMI · cut to length</p><div class="envelope-value">${Math.round(selectedLayout.interiorWidth * 1000)} × ${Math.round(selectedLayout.interiorDepth * 1000)}</div><div class="muted">Between wall faces · width × depth</div><div class="outer-envelope">ABC simulation clear interior: <strong>1290 × 895 mm</strong>.<br>Outside frame bars: <strong>${frameDimensions} mm</strong>.<br>Walls bolt to the outside of the frame; panels span 1390 × 945 mm overall. Frame rails project 30 mm inside the walls.<br>Extrusions arrive cut to the specified lengths.<br>Clamps and the camera foot extend beyond this frame envelope.</div></section>
+      <section class="envelope"><div class="eyebrow">BARS AS PURCHASED</div><p class="muted">MISUMI · cut to length</p><div class="envelope-value">${Math.round(selectedLayout.interiorWidth * 1000)} × ${Math.round(selectedLayout.interiorDepth * 1000)} mm</div><div class="muted">Between wall faces · width × depth</div><div class="outer-envelope">ABC simulation clear interior: <strong>1290 × 895 mm</strong>.<br>Outside frame bars: <strong>${frameDimensions} mm</strong>.<br>Walls bolt to the outside of the frame; panels span 1390 × 945 mm overall. Frame rails project 30 mm inside the walls.<br>Extrusions arrive cut to the specified lengths.<br>Clamps and the camera foot extend beyond this frame envelope.</div></section>
       <section class="visibility-controls" aria-label="Visibility">
         <label><input id="ghost-walls" type="checkbox" checked />Transparent walls</label>
         <label><input id="show-walls" type="checkbox" checked />Show wall panels</label>
@@ -68,6 +79,12 @@ application.innerHTML = `
     </aside>
   </main>`;
 const viewport = requireElement<HTMLDivElement>("#viewport");
+const staticMeasurements = [".envelope", ".model-notes"].flatMap((selector) =>
+  getMeasurementTextNodes(requireElement(selector)).map((node) => ({
+    node,
+    source: node.data,
+  })),
+);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xedf2f5);
 const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 30);
@@ -107,7 +124,6 @@ grid.position.y = -0.754;
 scene.add(grid);
 const parts = createWorkcell(scene, selectedLayout);
 const partsById = new Map(parts.map((part) => [part.description.id, part]));
-renderShoppingList(requireElement("#shopping-panel"), parts, selectedLayout);
 function showSidebarPanel(panelName: "assembly" | "shopping") {
   for (const name of ["assembly", "shopping"] as const) {
     const isActive = name === panelName;
@@ -127,6 +143,7 @@ requireElement("#part-shopping").addEventListener("click", () =>
   showSidebarPanel("shopping"),
 );
 const dimensionsGroup = new THREE.Group();
+const updateDimensionLabels: (() => void)[] = [];
 scene.add(dimensionsGroup);
 function addDimension(
   start: THREE.Vector3,
@@ -167,17 +184,23 @@ function addDimension(
   labelCanvas.height = 96;
   const context = labelCanvas.getContext("2d");
   if (!context) return;
-  context.fillStyle = "#f9fcfd";
-  context.beginPath();
-  context.roundRect(2, 8, 636, 80, 16);
-  context.fill();
-  context.font = "500 46px monospace";
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillStyle = new THREE.Color(color).getStyle();
-  context.fillText(label, 320, 49, 608);
   const labelTexture = new THREE.CanvasTexture(labelCanvas);
   labelTexture.colorSpace = THREE.SRGBColorSpace;
+  const updateLabel = () => {
+    context.clearRect(0, 0, labelCanvas.width, labelCanvas.height);
+    context.fillStyle = "#f9fcfd";
+    context.beginPath();
+    context.roundRect(2, 8, 636, 80, 16);
+    context.fill();
+    context.font = "500 46px monospace";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillStyle = new THREE.Color(color).getStyle();
+    context.fillText(formatMeasurementText(label, selectedUnit), 320, 49, 608);
+    labelTexture.needsUpdate = true;
+  };
+  updateDimensionLabels.push(updateLabel);
+  updateLabel();
   const sprite = new THREE.Sprite(
     new THREE.SpriteMaterial({
       map: labelTexture,
@@ -241,13 +264,13 @@ addDimension(
 addDimension(
   new THREE.Vector3(-0.12, 0.03, -0.12),
   new THREE.Vector3(-0.12, 0.03 + targets.cameraHeight, -0.12),
-  "954 mm · optical height",
+  `${(targets.cameraHeight * 1000).toFixed(1)} mm · optical height`,
   0xa35c28,
 );
 addDimension(
   new THREE.Vector3(0.18, 0.1, targets.cameraDepth),
   new THREE.Vector3(0.18, 0.1, targets.armDepth),
-  "166.5 mm · setback",
+  `${((targets.armDepth - targets.cameraDepth) * 1000).toFixed(1)} mm · setback`,
   0xa35c28,
 );
 const tooltip = requireElement<HTMLDivElement>("#tooltip");
@@ -311,9 +334,18 @@ function inspectPart(part: ModelPart) {
   if (purchaseUrl) productLink.href = purchaseUrl;
   requireElement("#focus-part").dataset.partId = description.id;
   requireElement("#part-name").textContent = description.name;
-  requireElement("#part-dimensions").textContent = description.dimensions;
-  requireElement("#part-description").textContent = description.description;
-  requireElement("#part-position").textContent = description.positionNote;
+  requireElement("#part-dimensions").textContent = formatMeasurementText(
+    description.dimensions,
+    selectedUnit,
+  );
+  requireElement("#part-description").textContent = formatMeasurementText(
+    description.description,
+    selectedUnit,
+  );
+  requireElement("#part-position").textContent = formatMeasurementText(
+    description.positionNote,
+    selectedUnit,
+  );
   requireElement("#part-shopping").hidden = !description.extrusion;
   const confidence = requireElement("#part-confidence");
   confidence.textContent = description.confidence;
@@ -346,7 +378,7 @@ for (const category of [
     button.type = "button";
     button.className = "part-button";
     button.dataset.partId = part.description.id;
-    button.innerHTML = `<span class="part-dot ${category}"></span><span>${part.description.name}${part.description.extrusion ? `<small class="part-list-dimensions">${part.description.extrusion.profile} · ${part.description.extrusion.lengthMm} mm</small>` : ""}</span><span class="part-arrow">↗</span>`;
+    button.innerHTML = `<span class="part-dot ${category}"></span><span>${part.description.name}${part.description.extrusion ? `<small class="part-list-dimensions">${formatMeasurementText(`${part.description.extrusion.profile} · ${part.description.extrusion.lengthMm} mm`, selectedUnit)}</small>` : ""}</span><span class="part-arrow">↗</span>`;
     button.addEventListener("click", () => {
       pinnedPart = part;
       inspectPart(part);
@@ -524,7 +556,10 @@ renderer.domElement.addEventListener("pointermove", (event) => {
   const name = document.createElement("strong");
   name.textContent = hoveredPart.description.name;
   const dimensions = document.createElement("span");
-  dimensions.textContent = hoveredPart.description.dimensions;
+  dimensions.textContent = formatMeasurementText(
+    hoveredPart.description.dimensions,
+    selectedUnit,
+  );
   const confidence = document.createElement("small");
   confidence.textContent = hoveredPart.description.confidence;
   tooltip.append(name, dimensions, confidence);
@@ -576,6 +611,60 @@ updateVisibility();
 setView("perspective");
 const initialPart = partsById.get("camera-mast");
 if (initialPart) inspectPart(initialPart);
+function updateDisplayedUnits() {
+  document.documentElement.dataset.lengthUnit = selectedUnit;
+  for (const button of document.querySelectorAll<HTMLButtonElement>(
+    "[data-unit]",
+  )) {
+    button.setAttribute(
+      "aria-pressed",
+      String(button.dataset.unit === selectedUnit),
+    );
+  }
+  for (const { node, source } of staticMeasurements) {
+    node.data = formatMeasurementText(source, selectedUnit);
+  }
+  for (const button of document.querySelectorAll<HTMLButtonElement>(
+    ".part-button",
+  )) {
+    const extrusion = partsById.get(button.dataset.partId ?? "")?.description
+      .extrusion;
+    const lengthLabel = button.querySelector(".part-list-dimensions");
+    if (extrusion && lengthLabel) {
+      lengthLabel.textContent = formatMeasurementText(
+        `${extrusion.profile} · ${extrusion.lengthMm} mm`,
+        selectedUnit,
+      );
+    }
+  }
+  const inspectedPart = partsById.get(
+    requireElement("#focus-part").dataset.partId ?? "",
+  );
+  if (inspectedPart) inspectPart(inspectedPart);
+  tooltip.hidden = true;
+  for (const updateLabel of updateDimensionLabels) updateLabel();
+  renderShoppingList(
+    requireElement("#shopping-panel"),
+    parts,
+    selectedLayout,
+    selectedUnit,
+  );
+  render();
+}
+for (const button of document.querySelectorAll<HTMLButtonElement>(
+  "[data-unit]",
+)) {
+  button.addEventListener("click", () => {
+    selectedUnit = button.dataset.unit === "in" ? "in" : "mm";
+    try {
+      localStorage.setItem("abc-box-length-unit", selectedUnit);
+    } catch {
+      // Unit switching does not depend on saving the preference.
+    }
+    updateDisplayedUnits();
+  });
+}
+updateDisplayedUnits();
 document.documentElement.dataset.viewerReady = "true";
 document.documentElement.dataset.robotModelState = "loading";
 void import("./yam-model")
