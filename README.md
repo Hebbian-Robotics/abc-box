@@ -27,7 +27,7 @@ The example table's front edge sits 75 mm inside the enclosure. Four clamps ente
 
 The viewer loads the official [I2RT YAM v1 URDF](https://github.com/i2rt-robotics/i2rt/blob/120c3c81400171174604e503943f8d1ebc891058/i2rt/robot_models/arm/yam/v1/yam.urdf) and nine unmodified STL meshes, pinned to revision `120c3c81400171174604e503943f8d1ebc891058`. The MIT-licensed assets, upstream license and SHA-256 provenance manifest are in [`public/models/i2rt-yam/`](public/models/i2rt-yam/).
 
-The model is loaded once, then cloned for the two arms. Joint axes, origins, limits and scale come from the URDF. A right-handed coordinate rotation maps URDF X to workspace depth, Y to width and Z to height. The reset pose uses shoulder and elbow angles of 60 degrees and open grippers (4 mm inward travel on each finger). It is an illustrative pose, not a collision check.
+The model is loaded once, then cloned for the two arms. Joint axes, origins, limits and scale come from the URDF. A right-handed coordinate rotation maps URDF X to workspace depth, Y to width and Z to height. The reset pose uses shoulder and elbow angles of 60 degrees and open grippers (approximately 60 mm between the fingertips). It is an illustrative pose, not a collision check.
 
 Runtime materials replace the URDF's CAD link colors with the white covers and black hardware shown in [I2RT YAM product photos](https://i2rt.com/products/yam-6-dof-arm). The combined STL meshes do not separate covers from joints, so vertex colors approximate the white regions on the two long links while retaining black ends. Cover boundaries, individual fasteners and markings are not reproduced exactly. Upstream URDF and mesh files remain unmodified.
 

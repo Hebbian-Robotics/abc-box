@@ -15,8 +15,10 @@ const lifted: ArmAngles = [-10, 80, 100, -75, 0, -10];
 const transferred: ArmAngles = [20, 75, 95, -70, 0, 20];
 const abovePlace: ArmAngles = [34.01, 85.46, 76.92, -81.45, 0, 34.01];
 const place: ArmAngles = [34.01, 90, 52.17, -52.16, 0, 34.01];
-const openFingers = -0.004;
-const closedFingers = -0.03;
+// Negative travel spreads the fingertip meshes apart: -30 mm gives a 60 mm
+// opening; -4 mm leaves an 8 mm gap. Joint origins alone suggest the opposite.
+const openFingers = -0.03;
+const closedFingers = -0.004;
 const playbackSpeed = 2;
 
 const keyframes: readonly DemoKeyframe[] = [
