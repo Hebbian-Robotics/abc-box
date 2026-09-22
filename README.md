@@ -63,7 +63,7 @@ Open the local URL printed by Vite. Drag to orbit, scroll to zoom, or choose Fro
 
 Use the **mm / in** toggle in the header to switch dimensions throughout the viewer, including 3D labels, hover tooltips, part details, notes and shopping tables. The browser remembers your preference when storage is available. Inches are rounded to two decimals; geometry and supplier cut lengths do not change. Profile identifiers, metric fastener designations, supplier part numbers, order CSVs and downloadable build documents retain their original metric specifications.
 
-The arms automatically run a gentle, repeating joint-motion and gripper demo once loaded. **Pause arms** holds the current pose; **Animate arms** resumes it; **Reset pose** stops the animation and restores the original pose. Animation suspends while the tab or arm models are hidden. It is illustrative motion, not collision simulation or a trajectory for operating real robots.
+The arms automatically run an 18-second pick-and-place-style loop once loaded: reach toward the outer/back portion of the worktop, descend with downward-facing grippers, close, lift, transfer inward and forward, lower, release and return. Each arm stays on its own side. The gripper reference point descends to approximately 45 mm above the worktop and rises by roughly 290 mm during transfer. There are no simulated objects or grasp physics. **Pause arms** holds the current pose; **Animate arms** resumes it; **Reset pose** stops the animation and restores the original pose. Animation suspends while the tab or arm models are hidden. It is illustrative motion, not collision simulation or a trajectory for operating real robots.
 
 ```sh
 pnpm format

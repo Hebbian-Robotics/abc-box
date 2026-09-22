@@ -48,7 +48,7 @@ application.innerHTML = `
         <button type="button" id="reset-view" aria-label="Reset view">↺</button>
       </nav>
       <div class="model-caption"><span class="caption-line"></span>ABC WORKSPACE · COMPACT SUPPLIER-CUT FRAME</div>
-      <div class="motion-controls" role="group" aria-label="Arm motion demo"><div><button type="button" id="toggle-arm-motion" aria-pressed="false" aria-describedby="motion-note" disabled>▶ Animate arms</button><button type="button" id="reset-arm-pose" disabled>Reset pose</button></div><p id="motion-note">Illustrative motion · no collision simulation</p></div>
+      <div class="motion-controls" role="group" aria-label="Arm motion demo"><div><button type="button" id="toggle-arm-motion" aria-pressed="false" aria-describedby="motion-note" disabled>▶ Animate arms</button><button type="button" id="reset-arm-pose" disabled>Reset pose</button></div><p id="motion-note">Pick &amp; place demo · no collision simulation</p></div>
       <div id="tooltip" role="tooltip" hidden></div>
       <div class="viewer-footer"><span>Drag to orbit · Scroll to zoom · Right-drag to pan</span><span>Hover to inspect · Click to pin</span></div>
       <div class="axis-key"><span class="axis-width">— Width</span><span class="axis-depth">— Depth into box</span><span class="axis-height">— Height</span></div>
